@@ -25,7 +25,7 @@ public struct CustomInteger {
     /// Integer size in bits
     public let bitWidth: Int
     
-    public struct Ranges {
+    public struct BitWidthRanges {
         /// Signed bitWidth range from -(2^(n - 1)) to 2^(n - 1) - 1
         public let signed: ClosedRange<Int>
         
@@ -33,7 +33,7 @@ public struct CustomInteger {
         public let unsigned: ClosedRange<UInt>
     }
     
-    public struct Masks {
+    public struct BitWidthMasks {
         /// Signed bitWidth mask (2^n) - 1
         public let signed: Int
         
@@ -44,8 +44,8 @@ public struct CustomInteger {
         public let unsigned: UInt
     }
     
-    public let masks: Masks
-    public let ranges: Ranges
+    public let masks: BitWidthMasks
+    public let ranges: BitWidthRanges
     
     public init?(for bits: Int) {
         
@@ -57,13 +57,13 @@ public struct CustomInteger {
         bitWidth = bits
         
         // Store signed & unsigned ranges
-        ranges = Ranges(
-            signed: (0 &- (1 << (bitWidth - 1)))...((1 << (bitWidth - 1)) &- 1),
+        ranges = BitWidthRanges(
+            signed: (0 &- (1 << (bitWidth &- 1)))...((1 << (bitWidth &- 1)) &- 1),
             unsigned: 0...(1 << bitWidth) &- 1
         )
         
         // Store bitWidth masks
-        masks = Masks(
+        masks = BitWidthMasks(
             signed: (1 << bits) &- 1,
             signedBit: 1 << (bits &- 1),
             unsigned: (1 << bits) &- 1
@@ -73,24 +73,28 @@ public struct CustomInteger {
     // MARK: - General methods.
     
     /// - Returns: true, if the data type is within it's own min...max range.
+    @inlinable
     public func isInRange<T: BinaryInteger>(_ value: T) -> Bool {
         return T.isSigned
         ? ranges.signed.contains(Int(value))    // Signed
         : ranges.unsigned.contains(UInt(value)) // Unsigned
     }
     
-    /// - Returns: true, if the data type is signed.
+    /// - Returns: true, if the data type is signed and negative
+    @inlinable
     public func isSigned<T: BinaryInteger>(_ value: T) -> Bool {
         return T.isSigned /* Unsigned always false */ && (Int(value) & masks.signedBit) != 0
     }
     
     /// - Returns: true, if both types are the same and both signs are opposite.
-    public func isOppositeSigns<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
-        return T.isSigned /* Unsigned always false */ && (lhs ^ rhs) < 0
+    @inlinable
+    public func isSignOpposite<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+        return T.isSigned /* Unsigned integer always false */ && (lhs ^ rhs) < 0
     }
     
     /// - Returns: true, if both data types are the same and have the same signs.
-    public func isSameSigns<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
-        return !T.isSigned /* Unsigned always true */ || (lhs ^ rhs) >= 0
+    @inlinable
+    public func isSignSame<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+        return !T.isSigned /* Unsigned integer always true */ || (lhs ^ rhs) >= 0
     }
 }

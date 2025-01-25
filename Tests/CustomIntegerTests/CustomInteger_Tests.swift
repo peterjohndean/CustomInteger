@@ -32,15 +32,15 @@ struct CustomInteger_Tests {
             #expect(a.isInRange(UInt8(1)) == true)
             #expect(a.isInRange(-256) == false)
             
-            #expect(a.isSameSigns(lhs: -1, rhs: 1) == false)
-            #expect(a.isSameSigns(lhs: 1, rhs: 1) == true)
-            #expect(a.isSameSigns(lhs: 1, rhs: 1) == true)
-            #expect(a.isSameSigns(lhs: UInt16(1), rhs: UInt16(1)) == true)
+            #expect(a.isSignSame(lhs: -1, rhs: 1) == false)
+            #expect(a.isSignSame(lhs: 1, rhs: 1) == true)
+            #expect(a.isSignSame(lhs: 1, rhs: 1) == true)
+            #expect(a.isSignSame(lhs: UInt16(1), rhs: UInt16(1)) == true)
             
-            #expect(a.isOppositeSigns(lhs: -1, rhs: 1) == true)
-            #expect(a.isOppositeSigns(lhs: 1, rhs: -1) == true)
-            #expect(a.isOppositeSigns(lhs: 1, rhs: 1) == false)
-            #expect(a.isOppositeSigns(lhs: UInt16(1), rhs: UInt16(1)) == false)
+            #expect(a.isSignOpposite(lhs: -1, rhs: 1) == true)
+            #expect(a.isSignOpposite(lhs: 1, rhs: -1) == true)
+            #expect(a.isSignOpposite(lhs: 1, rhs: 1) == false)
+            #expect(a.isSignOpposite(lhs: UInt16(1), rhs: UInt16(1)) == false)
             
         }
     }

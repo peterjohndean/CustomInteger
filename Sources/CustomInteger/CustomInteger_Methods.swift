@@ -27,10 +27,10 @@ extension CustomInteger {
         
         // Adjust bitWidth for signed or unsigned data types.
         let adjustedBitWidth = T.isSigned
-        ? bitWidth - 1  // Signed
+        ? bitWidth &- 1  // Signed
         : bitWidth      // Unsigned
         
-        return shift >= adjustedBitWidth /* Shifts >= bitWidth */ || (value >> (T(adjustedBitWidth) - shift)) != 0 /* Shifts < bitWidth */
+        return shift >= adjustedBitWidth /* Shifts >= bitWidth */ || (value >> (adjustedBitWidth &- Int(shift))) != 0 /* Shifts < bitWidth */
     }
     
     /* Integer Overflow Truth Tables
@@ -85,31 +85,41 @@ extension CustomInteger {
         |-----------|--------------------------------|-----------|
      */
     
-    /// - Returns: true, if lhs `+` rhs will result in an arithmetic overflow.
-    public func additionReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+    /// - Returns: A tuple containing the result of the addition along with a Boolean value indicating whether overflow occurred.
+    public func addingReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         if T.isSigned {
             // Overflow logic for signed integers
-            guard (lhs ^ rhs) >= 0 else {
-                return false // Opposite signs, no risk of overflow
-            }
-            
+            let lhs = Int(lhs)
             let rhs = Int(rhs)
             
-            // Check for positive overflow
-            if lhs > 0 /*&& rhs > 0*/ && lhs > ranges.signed.upperBound - rhs {
-                return true
+            // Check for opposite signs, no risk of overflow
+            guard (lhs ^ rhs) >= 0 else {
+                return (T(lhs &+ rhs), false)
+            }
+            
+            // Check for positive overflow (same signs)
+            if lhs > 0 && lhs > ranges.signed.upperBound &- rhs {
+                return (T(lhs &+ rhs), true)
             } else
-            // Check for negative overflow
-            if lhs < 0 /*&& rhs < 0*/ && lhs < ranges.signed.lowerBound - rhs {
-                return true
+            // Check for negative overflow (same signs)
+            if lhs < 0 && lhs < ranges.signed.lowerBound &- rhs {
+                return (T(lhs &+ rhs), true)
             }
             
             // No overflow
-            return false
+            return (T(lhs &+ rhs), false)
             
         } else {
             // Overflow logic for unsigned integers
-            return (rhs > (T(ranges.unsigned.upperBound) - lhs)) // rhs > (max - lhs)
+            let lhs = UInt(lhs)
+            let rhs = UInt(rhs)
+            
+            // Check for positive overflow (only same signs ;) )
+            if rhs > (ranges.unsigned.upperBound &- UInt(lhs)) {
+                return (0, true)
+            } else {
+                return (T(lhs &+ rhs), false)
+            }
         }
     }
     
@@ -124,11 +134,11 @@ extension CustomInteger {
             let rhs = Int(rhs)
             
             // Check for positive overflow
-            if lhs > 0 && lhs > ranges.signed.upperBound + rhs {
+            if lhs > 0 && lhs > ranges.signed.upperBound &+ rhs {
                 return true
             } else
             // Check for negative overflow
-            if lhs < 0 && lhs < ranges.signed.lowerBound + rhs {
+            if lhs < 0 && lhs < ranges.signed.lowerBound &+ rhs {
                 return true
             }
             

@@ -86,7 +86,7 @@ extension CustomInteger {
      */
     
     /// - Returns: A tuple containing the result of the addition along with a Boolean value indicating whether overflow occurred.
-    public func addingReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
+    public func addingReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         if T.isSigned {
             // Overflow logic for signed integers
             let lhs = Int(lhs)

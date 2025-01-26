@@ -168,156 +168,156 @@ struct Overflow_Tests {
         }
     }
     
-    @Test func addingReportOverflow_Tests() {
+    @Test func addingReportingOverflow_Tests() {
 
         if let a = CustomInteger(for: 64) {
             // Signed Integer Tests
             // Test 1: Negative overflow beyond lower bound
-            #expect(a.addingReportOverflow(lhs: -1 as Int64, rhs: -Int64.max) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: -1 as Int64, rhs: -Int64.max) == (-9223372036854775808, false))
             
             // Test 2: Overflow due to adding negative values
-            #expect(a.addingReportOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775807, false))
             
             // Test 3: Positive overflow
-            #expect(a.addingReportOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
             
             // Test 4: Negative underflow
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
             
             // Test 5: No overflow (midpoint addition)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2) == (9223372036854775806, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2) == (9223372036854775806, false))
             
             // Test 6: No overflow (edge case addition)
-            #expect(a.addingReportOverflow(lhs: Int64.min / 2, rhs: (-Int64.max - 1) / 2) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: (-Int64.max - 1) / 2) == (-9223372036854775808, false))
             
             // Test 7: No overflow (adding zero to min)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
             
             // Test 8: No overflow (adding 1 to min)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: 1) == (-9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 1) == (-9223372036854775807, false))
             
             // Test 9: No overflow (adding zero to max)
-            #expect(a.addingReportOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
             
             // Test 10: No overflow (subtracting 1 from max)
-            #expect(a.addingReportOverflow(lhs: Int64.max, rhs: -1) == (9223372036854775806, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: -1) == (9223372036854775806, false))
             
             // Test 11: Negative overflow (edge case)
-            #expect(a.addingReportOverflow(lhs: -1, rhs: -Int64.max) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: -1, rhs: -Int64.max) == (-9223372036854775808, false))
             
             // Test 12: No overflow (edge case addition)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
             
             // Test 13: No overflow (midpoint addition for negatives)
-            #expect(a.addingReportOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2) == (-9223372036854775806, false))
+            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2) == (-9223372036854775806, false))
             
             // Test 14: No overflow (beyond midpoint for negatives)
-            #expect(a.addingReportOverflow(lhs: -Int64.max / 2, rhs: (-Int64.max / 2) - 1) == (-9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: (-Int64.max / 2) - 1) == (-9223372036854775807, false))
             
             // Test 15: No overflow (adding zero to zero)
-            #expect(a.addingReportOverflow(lhs: 0, rhs: 0) == (0, false))
+            #expect(a.addingReportingOverflow(lhs: 0, rhs: 0) == (0, false))
             
             // Test 16: No overflow (opposite signs cancel out)
-            #expect(a.addingReportOverflow(lhs: 1, rhs: -1) == (0, false))
+            #expect(a.addingReportingOverflow(lhs: 1, rhs: -1) == (0, false))
             
             // Test 17: No overflow (Int64.min + Int64.max = -1)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
             
             // Unsigned Integer Tests
             // Test 18: Overflow (UInt64.max + 1)
-            #expect(a.addingReportOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
             
             // Test 19: No overflow (UInt64.max + 0)
-            #expect(a.addingReportOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
             
             // Test 20: No overflow (UInt64.max - 1 + 1)
-            #expect(a.addingReportOverflow(lhs: UInt64.max - 1, rhs: 1) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max - 1, rhs: 1) == (18446744073709551615, false))
             
             // Test 21: No overflow (0 + UInt64.max)
-            #expect(a.addingReportOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
             
             // Test 22: No overflow (1 + (UInt64.max - 1))
-            #expect(a.addingReportOverflow(lhs: 1, rhs: UInt64.max - 1) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: 1, rhs: UInt64.max - 1) == (18446744073709551615, false))
             
             // Test 23: No overflow (midpoint addition)
-            #expect(a.addingReportOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2) == (18446744073709551614, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2) == (18446744073709551614, false))
             
             // Test 24: No overflow (edge case addition)
-            #expect(a.addingReportOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
             
             // Test 25: No overflow (0 + 0)
-            #expect(a.addingReportOverflow(lhs: 0, rhs: 0) == (0, false))
+            #expect(a.addingReportingOverflow(lhs: 0, rhs: 0) == (0, false))
             
             // Test 26: No overflow (1 + 0)
-            #expect(a.addingReportOverflow(lhs: 1, rhs: 0) == (1, false))
+            #expect(a.addingReportingOverflow(lhs: 1, rhs: 0) == (1, false))
             
             // Test 27: No overflow (0 + UInt64.max)
-            #expect(a.addingReportOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
             
             // Mixed Tests
             // Test 28: Positive overflow (Int64.max - 1 + 2)
-            #expect(a.addingReportOverflow(lhs: Int64.max - 1, rhs: 2) == (-9223372036854775808, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.max - 1, rhs: 2) == (-9223372036854775808, true))
             
             // Test 29: Negative overflow (Int64.min + 1 - 2)
-            #expect(a.addingReportOverflow(lhs: Int64.min + 1, rhs: -2) == (9223372036854775807, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.min + 1, rhs: -2) == (9223372036854775807, true))
             
             // Test 30: Positive overflow (Int64.max + 1)
-            #expect(a.addingReportOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
             
             // Test 31: Negative overflow (Int64.min - 1)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
             
             // Test 32: No overflow (Int64.max / 2 + Int64.max / 2 + 1)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
             
             // Test 33: No overflow (Int64.min / 2 + (-Int64.max / 2 - 1))
-            #expect(a.addingReportOverflow(lhs: Int64.min / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775808, false))
             
             // Test 34: No overflow (Int64.max / 2 + -Int64.max / 2)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
             
             // Test 35: No overflow (Int64.max / 2 + -Int64.max)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: -Int64.max) == (-4611686018427387904, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max) == (-4611686018427387904, false))
             
             // Test 36: No overflow (Int64.min + Int64.max)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
             
             // Test 37: No overflow (UInt64.max / 2 + UInt64.max / 2 + 1)
-            #expect(a.addingReportOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
             
             // Test 38: Overflow (UInt64.max + 1)
-            #expect(a.addingReportOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
             
             // Test 39: Overflow (UInt64.max - 1 + 2)
-            #expect(a.addingReportOverflow(lhs: UInt64.max - 1, rhs: 2) == (0, true))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max - 1, rhs: 2) == (0, true))
             
             // Test 40: No overflow (0 + UInt64.max)
-            #expect(a.addingReportOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
             
             // Test 41: No overflow (Int64.max + 0)
-            #expect(a.addingReportOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
             
             // Test 42: No overflow (Int64.min + 0)
-            #expect(a.addingReportOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
             
             // Test 43: No overflow (UInt64.max + 0)
-            #expect(a.addingReportOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
             
             // Test 44: No overflow (Int64.max / 2 + 0)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: 0) == (4611686018427387903, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: 0) == (4611686018427387903, false))
             
             // Test 45: No overflow (Int64.min / 2 + 0)
-            #expect(a.addingReportOverflow(lhs: Int64.min / 2, rhs: 0) == (-4611686018427387904, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: 0) == (-4611686018427387904, false))
             
             // Test 46: No overflow (UInt64.max / 2 + 0)
-            #expect(a.addingReportOverflow(lhs: UInt64.max / 2, rhs: 0) == (9223372036854775807, false))
+            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: 0) == (9223372036854775807, false))
             
             // Test 47: No overflow (Int64.max / 2 + -Int64.max / 2)
-            #expect(a.addingReportOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
+            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
         }
     }
     
-    @Test func subtractionReportOverflow_Tests() {
+    @Test func subtractingReportingOverflow_Tests() {
         
         if let a = CustomInteger(for: 64) {
             // Signed Integer Test Cases

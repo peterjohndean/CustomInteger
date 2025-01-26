@@ -115,7 +115,7 @@ extension CustomInteger {
             let rhs = UInt(rhs)
             
             // Check for positive overflow (only same signs ;) )
-            if rhs > (ranges.unsigned.upperBound &- UInt(lhs)) {
+            if rhs > (ranges.unsigned.upperBound &- lhs) {
                 return (0, true)
             } else {
                 return (T(lhs &+ rhs), false)
@@ -123,30 +123,40 @@ extension CustomInteger {
         }
     }
     
-    /// - Returns: true, if lhs `-` rhs will result in an arithmetic overflow.
-    public func subtractionReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+    /// - Returns: A tuple containing the result of the subtraction along with a Boolean value indicating whether overflow occurred.
+    public func subtractingReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         if T.isSigned {
             // Overflow logic for signed integers
-            guard (lhs ^ rhs) < 0 else {
-                return false // Same signs, no risk of overflow
-            }
-            
+            let lhs = Int(lhs)
             let rhs = Int(rhs)
             
-            // Check for positive overflow
+            // Check for same signs, no risk of overflow
+            guard (lhs ^ rhs) < 0 else {
+                return (T(lhs &- rhs), false)
+            }
+            
+            // Check for positive overflow (opposite signs)
             if lhs > 0 && lhs > ranges.signed.upperBound &+ rhs {
-                return true
+                return (T(lhs &- rhs), true)
             } else
-            // Check for negative overflow
+            // Check for negative overflow (opposit signs)
             if lhs < 0 && lhs < ranges.signed.lowerBound &+ rhs {
-                return true
+                return (T(lhs &- rhs), true)
             }
             
             // No overflow
-            return false
+            return (T(lhs &- rhs), false)
         } else {
             // Overflow logic for unsigned integers
-            return lhs < rhs // lhs < rhs -> Negative result -> Overflow
+            let lhs = UInt(lhs)
+            let rhs = UInt(rhs)
+            
+            // Check for negative overflow (only same signs ;) )
+            if lhs < rhs {
+                return (T(lhs &- rhs), true)
+            } else {
+                return (T(lhs &- rhs), false)
+            }
         }
     }
     

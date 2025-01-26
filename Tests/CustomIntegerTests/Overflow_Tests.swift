@@ -318,51 +318,84 @@ struct Overflow_Tests {
     }
     
     @Test func subtractionReportOverflow_Tests() {
+        
         if let a = CustomInteger(for: 64) {
             // Signed Integer Test Cases
             
             // Test Case 1: Positive Overflow
-            #expect(a.subtractionReportOverflow(lhs: Int64.max, rhs: -1) == true)  // Overflow: Result exceeds Int64.max
+            #expect(a.subtractingReportingOverflow(lhs: Int64.max, rhs: -1) == (Int64.max &- (-1), true))  // Overflow: Result exceeds Int64.max
             
             // Test Case 2: Negative Overflow
-            #expect(a.subtractionReportOverflow(lhs: Int64.min, rhs: 1) == true)  // Overflow: Result exceeds Int64.min
+            #expect(a.subtractingReportingOverflow(lhs: Int64.min, rhs: 1) == (Int64.min &- 1, true))  // Overflow: Result exceeds Int64.min
             
-            // Test Case 3: No Overflow (Same Signs)
-            #expect(a.subtractionReportOverflow(lhs: 100, rhs: 50) == false)  // No overflow
+            // Test Case 3: No Overflow (Same Signs, Positive)
+            #expect(a.subtractingReportingOverflow(lhs: 100, rhs: 50) == (100 - 50, false))  // No overflow
             
-            // Test Case 4: No Overflow (Opposite Signs)
-            #expect(a.subtractionReportOverflow(lhs: -100, rhs: 50) == false)  // No overflow
+            // Test Case 4: No Overflow (Same Signs, Negative)
+            #expect(a.subtractingReportingOverflow(lhs: -100, rhs: -50) == (-100 - (-50), false))  // No overflow
             
-            // Test Case 5: Negative Overflow (Beyond Lower Bound)
-            #expect(a.subtractionReportOverflow(lhs: Int64.min, rhs: Int64.max) == true)  // Overflow: Result goes below Int64.min
+            // Test Case 5: No Overflow (Opposite Signs)
+            #expect(a.subtractingReportingOverflow(lhs: -100, rhs: 50) == (-100 - 50, false))  // No overflow
             
-            // Test Case 6: Positive Overflow (Beyond Upper Bound)
-            #expect(a.subtractionReportOverflow(lhs: Int64.max, rhs: Int64.min) == true)  // Overflow: Result goes above Int64.max
+            // Test Case 6: Negative Overflow (Beyond Lower Bound)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (Int64.min &- Int64.max, true))  // Overflow: Result goes below Int64.min
             
-            // Test Case 7: No Overflow (Valid Subtraction)
-            #expect(a.subtractionReportOverflow(lhs: 100, rhs: -50) == false)  // No overflow
+            // Test Case 7: Positive Overflow (Beyond Upper Bound)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.max, rhs: Int64.min) == (Int64.max &- Int64.min, true))  // Overflow: Result goes above Int64.max
             
+            // Test Case 8: No Overflow (Valid Subtraction, Opposite Signs)
+            #expect(a.subtractingReportingOverflow(lhs: 100, rhs: -50) == (100 - (-50), false))  // No overflow
+            
+            // Test Case 9: Edge Case (Zero Subtraction)
+            #expect(a.subtractingReportingOverflow(lhs: 0, rhs: 0) == (0, false))  // No overflow
+            
+            // Test Case 10: Edge Case (Subtracting Zero)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.max, rhs: 0) == (Int64.max, false))  // No overflow
+            
+            // Test Case 11: Edge Case (Subtracting Zero from Minimum)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.min, rhs: 0) == (Int64.min, false))  // No overflow
+            
+            // Test Case 12: Edge Case (Subtracting Maximum from Maximum)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.max, rhs: Int64.max) == (Int64.max &- Int64.max, false))  // No overflow
+            
+            // Test Case 13: Edge Case (Subtracting Minimum from Minimum)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.min, rhs: Int64.min) == (Int64.min &- Int64.min, false))  // No overflow
             
             // Unsigned Integer Test Cases
             
             // Test Case 1: Overflow (Negative Result)
-            #expect(a.subtractionReportOverflow(lhs: 10 as UInt64, rhs: 20 as UInt64) == true)  // Overflow: Negative result
+            #expect(a.subtractingReportingOverflow(lhs: UInt64(10), rhs: UInt64(20)) == (UInt64(10) &- UInt64(20), true))  // Overflow: Negative result
             
             // Test Case 2: No Overflow (Valid Subtraction)
-            #expect(a.subtractionReportOverflow(lhs: 100 as UInt64, rhs: 50 as UInt64) == false)  // No overflow
+            #expect(a.subtractingReportingOverflow(lhs: UInt64(100), rhs: UInt64(50)) == (UInt64(100) - UInt64(50), false))  // No overflow
             
             // Test Case 3: No Overflow (Zero Result)
-            #expect(a.subtractionReportOverflow(lhs: 50 as UInt64, rhs: 50 as UInt64) == false)  // No overflow
+            #expect(a.subtractingReportingOverflow(lhs: UInt64(50), rhs: UInt64(50)) == (UInt64(50) - UInt64(50), false))  // No overflow
             
+            // Test Case 4: Edge Case (Subtracting Zero)
+            #expect(a.subtractingReportingOverflow(lhs: UInt64.max, rhs: UInt64(0)) == (UInt64.max, false))  // No overflow
+            
+            // Test Case 5: Edge Case (Subtracting Maximum from Maximum)
+            #expect(a.subtractingReportingOverflow(lhs: UInt64.max, rhs: UInt64.max) == (UInt64.max &- UInt64.max, false))  // No overflow
+            
+            // Test Case 6: Edge Case (Subtracting One from Zero)
+            #expect(a.subtractingReportingOverflow(lhs: UInt64(0), rhs: UInt64(1)) == (UInt64(0) &- UInt64(1), true))  // Overflow: Negative result
             
             // Edge Case Tests
             
-            // Test Case 1: Maximum Possible Subtraction
-            #expect(a.subtractionReportOverflow(lhs: Int64.max, rhs: Int64.min) == true)  // Overflow: Result exceeds Int64.max
+            // Test Case 1: Maximum Possible Subtraction (Signed)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.max, rhs: Int64.min) == (Int64.max &- Int64.min, true))  // Overflow: Result exceeds Int64.max
             
-            // Test Case 2: Minimum Possible Subtraction
-            #expect(a.subtractionReportOverflow(lhs: Int64.min, rhs: Int64.max) == true)  // Overflow: Result exceeds Int64.min
+            // Test Case 2: Minimum Possible Subtraction (Signed)
+            #expect(a.subtractingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (Int64.min &- Int64.max, true))  // Overflow: Result exceeds Int64.min
+            
+            // Test Case 3: Maximum Possible Subtraction (Unsigned)
+            #expect(a.subtractingReportingOverflow(lhs: UInt64.max, rhs: UInt64.min) == (UInt64.max &- UInt64.min, false))  // No overflow
+            
+            // Test Case 4: Minimum Possible Subtraction (Unsigned)
+            #expect(a.subtractingReportingOverflow(lhs: UInt64.min, rhs: UInt64.max) == (UInt64.min &- UInt64.max, true))  // Overflow: Negative result
         }
+        
     }
     
     @Test func remainderReportOverflow_Tests() {

@@ -85,34 +85,42 @@ struct Overflow_Tests {
     }
     
     @Test func multiplicationReportOverflow_Tests() {
+        
         if let a = CustomInteger(for: 64) {
-            #expect(a.multiplicationReportOverflow(lhs: 0 as Int64, rhs: 0 as Int64) == false)  // 0 * 0
-            #expect(a.multiplicationReportOverflow(lhs: 1 as Int64, rhs: 0 as Int64) == false)  // 1 * 0
-            #expect(a.multiplicationReportOverflow(lhs: 0 as Int64, rhs: 1 as Int64) == false)  // 0 * 1
-            #expect(a.multiplicationReportOverflow(lhs: -1 as Int64, rhs: 0 as Int64) == false) // -1 * 0
+            // Test cases for multiplication by zero
+            #expect(a.multipliedReportingOverflow(lhs: 0, rhs: 0) == (0, false))  // 0 * 0
+            #expect(a.multipliedReportingOverflow(lhs: 1, rhs: 0) == (0, false))  // 1 * 0
+            #expect(a.multipliedReportingOverflow(lhs: 0, rhs: 1) == (0, false))  // 0 * 1
+            #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 0) == (0, false)) // -1 * 0
             
-            #expect(a.multiplicationReportOverflow(lhs: 2 as Int64, rhs: 3 as Int64) == false)  // 2 * 3 = 6
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max / 2 as Int64, rhs: 2 as Int64) == false)  // Maximum safe multiplication
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max, rhs: 2 as Int64) == true)   // Overflow (Int64 max * 2)
+            // Test cases for positive multiplication
+            #expect(a.multipliedReportingOverflow(lhs: 2, rhs: 3) == (6, false))  // 2 * 3 = 6
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max / 2, rhs: 2) == (Int64.max - 1, false))  // Maximum safe multiplication
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max, rhs: 2) == (-2, true))   // Overflow (Int64 max * 2)
             
-            #expect(a.multiplicationReportOverflow(lhs: -2 as Int64, rhs: -3 as Int64) == false)  // -2 * -3 = 6
-            #expect(a.multiplicationReportOverflow(lhs: (Int64.min + 1) / 2 as Int64, rhs: -2 as Int64) == false)  // Maximum safe negative multiplication
-            #expect(a.multiplicationReportOverflow(lhs: Int64.min, rhs: -2 as Int64) == true)   // Overflow (Int64 min * -2)
+            // Test cases for negative multiplication
+            #expect(a.multipliedReportingOverflow(lhs: -2, rhs: -3) == (6, false))  // -2 * -3 = 6
+            #expect(a.multipliedReportingOverflow(lhs: (Int64.min + 1) / 2, rhs: -2) == (-(Int64.min + 2), false))  // Maximum safe negative multiplication
+            #expect(a.multipliedReportingOverflow(lhs: Int64.min, rhs: -2) == (0, true))   // Overflow (Int64 min * -2)
             
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max / 2 as Int64, rhs: 2 as Int64) == false)  // Safe for signed
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max / 2 as Int64, rhs: 3 as Int64) == true)   // Overflow
-            #expect(a.multiplicationReportOverflow(lhs: Int64.min / 2 as Int64, rhs: 2 as Int64) == false)  // Safe for signed
-            #expect(a.multiplicationReportOverflow(lhs: Int64.min / 2 as Int64, rhs: 3 as Int64) == true)   // Overflow
+            // Test cases for boundary conditions
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max / 2, rhs: 2) == (Int64.max - 1, false))  // Safe for signed
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max / 2, rhs: 3) == (Int64.max / 2 &* 3, true))   // Overflow
+            #expect(a.multipliedReportingOverflow(lhs: Int64.min / 2, rhs: 2) == (Int64.min, false))  // Safe for signed
+            #expect(a.multipliedReportingOverflow(lhs: Int64.min / 2, rhs: 3) == (Int64.min / 2 &* 3, true))   // Overflow
             
-            #expect(a.multiplicationReportOverflow(lhs: UInt64.max / 2 as UInt64, rhs: 2 as UInt64) == false)  // Safe multiplication for unsigned
-            #expect(a.multiplicationReportOverflow(lhs: UInt64.max / 2 as UInt64, rhs: 3 as UInt64) == true)   // Overflow
-            #expect(a.multiplicationReportOverflow(lhs: UInt64.max, rhs: 2 as UInt64) == true)  // Overflow (UInt64 max * 2)
+            // Test cases for unsigned integers
+            #expect(a.multipliedReportingOverflow(lhs: UInt64(UInt64.max / 2), rhs: 2) == (UInt64.max - 1, false))  // Safe multiplication for unsigned
+            #expect(a.multipliedReportingOverflow(lhs: UInt64(UInt64.max / 2), rhs: 3) == (UInt64.max / 2 &* 3, true))   // Overflow
+            #expect(a.multipliedReportingOverflow(lhs: UInt64.max, rhs: 2) == (UInt64.max &* 2, true))  // Overflow (UInt64 max * 2)
             
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max, rhs: 1 as Int64) == false) // Max signed * 1
-            #expect(a.multiplicationReportOverflow(lhs: Int64.max, rhs: 2 as Int64) == true)  // Max signed * 2 (Overflow)
-            #expect(a.multiplicationReportOverflow(lhs: Int64.min, rhs: -1 as Int64) == true) // Min signed * -1 (Overflow)
-            #expect(a.multiplicationReportOverflow(lhs: UInt64.max, rhs: 2 as UInt64) == true) // Max unsigned * 2 (Overflow)
+            // Test cases for special edge cases
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max, rhs: 1) == (Int64.max, false)) // Max signed * 1
+            #expect(a.multipliedReportingOverflow(lhs: Int64.max, rhs: 2) == (-2, true))  // Max signed * 2 (Overflow)
+            #expect(a.multipliedReportingOverflow(lhs: Int64.min, rhs: -1) == (Int64.min, true)) // Min signed * -1 (Overflow)
+            #expect(a.multipliedReportingOverflow(lhs: UInt64.max, rhs: 2) == (UInt64.max &* 2, true)) // Max unsigned * 2 (Overflow)
         }
+        
     }
     
     @Test func divisionReportOverflow_Tests() {

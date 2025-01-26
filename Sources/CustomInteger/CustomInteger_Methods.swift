@@ -160,10 +160,10 @@ extension CustomInteger {
         }
     }
     
-    /// - Returns: true, if lhs `*` rhs will result in an arithmetic overflow.
-    public func multiplicationReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+    /// - Returns: A tuple containing the result of the multiplication along with a Boolean value indicating whether overflow occurred.
+    public func multipliedReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         guard lhs != 0 && rhs != 0 else {
-            return false // Multiplication by zero
+            return (0, false) // Multiplication by zero
         }
         
         if T.isSigned {
@@ -175,22 +175,29 @@ extension CustomInteger {
                 // Same signs
                 if ((lhs > 0 && rhs > 0 && lhs > ranges.signed.upperBound / rhs) || // Positive * Positive
                     (lhs < 0 && rhs < 0 && lhs < ranges.signed.upperBound / rhs)) { // Negative * Negative
-                    return true; // Overflow
+                    return (T(lhs &* rhs), true) // Overflow
                 }
             } else {
                 // Opposite signs
                 if ((lhs > 0 && rhs < 0 && lhs > ranges.signed.lowerBound / rhs) || // Positive * Negative
                     (lhs < 0 && rhs > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
-                    return true; // Overflow
+                    return (T(lhs &* rhs), true) // Overflow
                 }
             }
             
             // No overflow
-            return false
+            return (T(lhs &* rhs), false)
             
         } else {
             // Overflow logic for unsigned integers
-            return lhs > ranges.unsigned.upperBound / UInt(rhs)
+            let lhs = UInt(lhs)
+            let rhs = UInt(rhs)
+            
+            if lhs > ranges.unsigned.upperBound / rhs {
+                return (T(lhs &* rhs), true)
+            } else {
+                return (T(lhs &* rhs), false)
+            }
         }
     }
     

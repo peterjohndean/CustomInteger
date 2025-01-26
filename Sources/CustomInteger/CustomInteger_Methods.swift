@@ -201,24 +201,22 @@ extension CustomInteger {
         }
     }
     
-    /// - Returns: true, if lhs `/` rhs will result in an arithmetic overflow.
-    public func divisionReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+    /// - Returns: A tuple containing the result of the division along with a Boolean value indicating whether overflow occurred.
+    public func dividedReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         // Division by zero check
         guard rhs != 0 else {
-            return true
+            return (0, true)
         }
         
         // Overflow logic for signed integers
         // Overflow occurs when dividing the minimum signed value by -1.
         // i.e. For 8 bit, -128 / -1 = +128 > than 8-bit max of 127.
         if T.isSigned && lhs == ranges.signed.lowerBound && rhs == -1 {
-            return true
-            
+            return (T(ranges.signed.lowerBound), true)
         }
         
         // No overflow
-        return false
-        
+        return (lhs / rhs, false)
     }
     
     /// - Returns: true, if lhs `%` rhs will result in an arithmetic overflow.

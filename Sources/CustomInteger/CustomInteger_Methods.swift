@@ -219,21 +219,21 @@ extension CustomInteger {
         return (lhs / rhs, false)
     }
     
-    /// - Returns: true, if lhs `%` rhs will result in an arithmetic overflow.
-    public func remainderReportOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
+    /// - Returns: A tuple containing the result of the remainder operation along with a Boolean value indicating whether overflow occurred.
+    public func remainderReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         // Modulus by zero check
         guard rhs != 0 else {
-            return true
+            return (0, true)
         }
         
         // Overflow logic for signed integers
         // Check for overflow: minimum value modulus by -1
         // Int.min % -1 = lhs − (rhs * (lhs / rhs))
         if T.isSigned && lhs == ranges.signed.lowerBound && rhs == -1 {
-            return true
+            return (0, true)
         }
         
         // No overflow
-        return false
+        return (lhs % rhs, false)
     }
 }

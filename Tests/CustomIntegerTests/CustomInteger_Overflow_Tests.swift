@@ -123,62 +123,6 @@ struct Overflow_Tests {
         
     }
     
-    @Test func divisionReportOverflow_Tests() {
-        
-        if let a = CustomInteger(for: 64) {
-            // Division by zero (signed)
-            #expect(a.dividedReportingOverflow(lhs: 0, rhs: 0) == (0, true), "Division by zero should return (0, true)")
-            #expect(a.dividedReportingOverflow(lhs: 1, rhs: 0) == (0, true), "Division by zero should return (0, true)")
-            #expect(a.dividedReportingOverflow(lhs: -1, rhs: 0) == (0, true), "Division by zero should return (0, true)")
-            
-            // Normal division (signed)
-            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: 1) == (Int64.max, false), "Int64.max / 1 should return (Int64.max, false)")
-            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: 1) == (Int64.min, false), "Int64.min / 1 should return (Int64.min, false)")
-            #expect(a.dividedReportingOverflow(lhs: 0, rhs: 1) == (0, false), "0 / 1 should return (0, false)")
-            #expect(a.dividedReportingOverflow(lhs: 100, rhs: 2) == (50, false), "100 / 2 should return (50, false)")
-            
-            // Overflow for signed integers (Int64.min / -1)
-            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: -1) == (Int64.min, true), "Int64.min / -1 should overflow")
-            
-            // Edge cases (signed)
-            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: 2) == (Int64.min / 2, false), "Int64.min / 2 should return (Int64.min / 2, false)")
-            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: -1) == (-Int64.max, false), "Int64.max / -1 should return (-Int64.max, false)")
-            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: -2) == (Int64.max / -2, false), "Int64.max / -2 should return (Int64.max / -2, false)")
-            #expect(a.dividedReportingOverflow(lhs: -10, rhs: -2) == (5, false), "-10 / -2 should return (5, false)")
-            
-            // Division with same values (signed)
-            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: Int64.max) == (1, false), "Int64.max / Int64.max should return (1, false)")
-            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: Int64.min) == (1, false), "Int64.min / Int64.min should return (1, false)")
-            #expect(a.dividedReportingOverflow(lhs: 1, rhs: 1) == (1, false), "1 / 1 should return (1, false)")
-            #expect(a.dividedReportingOverflow(lhs: 100, rhs: 100) == (1, false), "100 / 100 should return (1, false)")
-            
-            // Safe division near Int64.min (signed)
-            #expect(a.dividedReportingOverflow(lhs: Int64.min + 1, rhs: -1) == (-(Int64.min + 1), false), "(Int64.min + 1) / -1 should return (-(Int64.min + 1), false)")
-            #expect(a.dividedReportingOverflow(lhs: Int64.min + 2, rhs: -1) == (-(Int64.min + 2), false), "(Int64.min + 2) / -1 should return (-(Int64.min + 2), false)")
-            
-            // Safe division within range (signed)
-            #expect(a.dividedReportingOverflow(lhs: Int64.max / 2, rhs: 2) == (Int64.max / 4, false), "(Int64.max / 2) / 2 should return (Int64.max / 4, false)")
-            
-            // Division by zero (unsigned)
-            #expect(a.dividedReportingOverflow(lhs: UInt64(0), rhs: UInt64(0)) == (0, true), "0 / 0 should return (0, true)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(1), rhs: UInt64(0)) == (0, true), "1 / 0 should return (0, true)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(0)) == (0, true), "100 / 0 should return (0, true)")
-            
-            // Normal division (unsigned)
-            #expect(a.dividedReportingOverflow(lhs: UInt64.max, rhs: UInt64(1)) == (UInt64.max, false), "UInt64.max / 1 should return (UInt64.max, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64.min, rhs: UInt64(1)) == (UInt64.min, false), "UInt64.min / 1 should return (UInt64.min, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(0), rhs: UInt64(1)) == (0, false), "0 / 1 should return (0, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(2)) == (50, false), "100 / 2 should return (50, false)")
-            
-            // Division with same values (unsigned)
-            #expect(a.dividedReportingOverflow(lhs: UInt64.max, rhs: UInt64.max) == (1, false), "UInt64.max / UInt64.max should return (1, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(1), rhs: UInt64.max) == (0, false), "1 / UInt64.max should return (0, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(200)) == (0, false), "100 / 200 should return (0, false)")
-            #expect(a.dividedReportingOverflow(lhs: UInt64.min, rhs: UInt64.min) == (0, true), "0 / 0 should return (0, true)")
-        }
-        
-    }
-    
     @Test func addingReportingOverflow_Tests() {
 
         if let a = CustomInteger(for: 64) {
@@ -409,24 +353,203 @@ struct Overflow_Tests {
         
     }
     
-    @Test func remainderReportOverflow_Tests() {
+    @Test func dividedReportingOverflow_Tests() {
+        
         if let a = CustomInteger(for: 64) {
-            #expect(a.remainderReportOverflow(lhs: 0, rhs: 0) == true)              // Division by zero
-            #expect(a.remainderReportOverflow(lhs: 1, rhs: 0) == true)              // Division by zero
-            #expect(a.remainderReportOverflow(lhs: Int.max, rhs: 0) == true)        // Division by zero
-            #expect(a.remainderReportOverflow(lhs: Int.min, rhs: -1) == true)       // Overflow: min / -1
-            #expect(a.remainderReportOverflow(lhs: Int.max, rhs: -1) == false)      // No overflow
-            #expect(a.remainderReportOverflow(lhs: 10, rhs: 2) == false)            // Valid division
-            #expect(a.remainderReportOverflow(lhs: -10, rhs: 3) == false)           // Valid division
-            #expect(a.remainderReportOverflow(lhs: Int.max, rhs: 1) == false)       // Valid division
-            #expect(a.remainderReportOverflow(lhs: Int.min, rhs: 2) == false)       // Valid division
-            #expect(a.remainderReportOverflow(lhs: UInt.max, rhs: 0) == true)       // Division by zero
-            #expect(a.remainderReportOverflow(lhs: 10 as UInt, rhs: 2) == false)    // Valid division
-            #expect(a.remainderReportOverflow(lhs: Int.min, rhs: Int.max) == false) // Valid division
-            #expect(a.remainderReportOverflow(lhs: Int.max, rhs: Int.min) == false) // Valid division
-            #expect(a.remainderReportOverflow(lhs: Int.min, rhs: 1) == false)       // Valid division
-            #expect(a.remainderReportOverflow(lhs: UInt.max, rhs: 1) == false)      // Valid division
-            #expect(a.remainderReportOverflow(lhs: UInt.max, rhs: UInt.max) == false) // Valid division
+            // Division by zero (signed)
+            #expect(a.dividedReportingOverflow(lhs: 0, rhs: 0) == (0, true), "Division by zero should return (0, true)")
+            #expect(a.dividedReportingOverflow(lhs: 1, rhs: 0) == (0, true), "Division by zero should return (0, true)")
+            #expect(a.dividedReportingOverflow(lhs: -1, rhs: 0) == (0, true), "Division by zero should return (0, true)")
+            
+            // Normal division (signed)
+            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: 1) == (Int64.max, false), "Int64.max / 1 should return (Int64.max, false)")
+            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: 1) == (Int64.min, false), "Int64.min / 1 should return (Int64.min, false)")
+            #expect(a.dividedReportingOverflow(lhs: 0, rhs: 1) == (0, false), "0 / 1 should return (0, false)")
+            #expect(a.dividedReportingOverflow(lhs: 100, rhs: 2) == (50, false), "100 / 2 should return (50, false)")
+            
+            // Overflow for signed integers (Int64.min / -1)
+            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: -1) == (Int64.min, true), "Int64.min / -1 should overflow")
+            
+            // Edge cases (signed)
+            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: 2) == (Int64.min / 2, false), "Int64.min / 2 should return (Int64.min / 2, false)")
+            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: -1) == (-Int64.max, false), "Int64.max / -1 should return (-Int64.max, false)")
+            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: -2) == (Int64.max / -2, false), "Int64.max / -2 should return (Int64.max / -2, false)")
+            #expect(a.dividedReportingOverflow(lhs: -10, rhs: -2) == (5, false), "-10 / -2 should return (5, false)")
+            
+            // Division with same values (signed)
+            #expect(a.dividedReportingOverflow(lhs: Int64.max, rhs: Int64.max) == (1, false), "Int64.max / Int64.max should return (1, false)")
+            #expect(a.dividedReportingOverflow(lhs: Int64.min, rhs: Int64.min) == (1, false), "Int64.min / Int64.min should return (1, false)")
+            #expect(a.dividedReportingOverflow(lhs: 1, rhs: 1) == (1, false), "1 / 1 should return (1, false)")
+            #expect(a.dividedReportingOverflow(lhs: 100, rhs: 100) == (1, false), "100 / 100 should return (1, false)")
+            
+            // Safe division near Int64.min (signed)
+            #expect(a.dividedReportingOverflow(lhs: Int64.min + 1, rhs: -1) == (-(Int64.min + 1), false), "(Int64.min + 1) / -1 should return (-(Int64.min + 1), false)")
+            #expect(a.dividedReportingOverflow(lhs: Int64.min + 2, rhs: -1) == (-(Int64.min + 2), false), "(Int64.min + 2) / -1 should return (-(Int64.min + 2), false)")
+            
+            // Safe division within range (signed)
+            #expect(a.dividedReportingOverflow(lhs: Int64.max / 2, rhs: 2) == (Int64.max / 4, false), "(Int64.max / 2) / 2 should return (Int64.max / 4, false)")
+            
+            // Division by zero (unsigned)
+            #expect(a.dividedReportingOverflow(lhs: UInt64(0), rhs: UInt64(0)) == (0, true), "0 / 0 should return (0, true)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(1), rhs: UInt64(0)) == (0, true), "1 / 0 should return (0, true)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(0)) == (0, true), "100 / 0 should return (0, true)")
+            
+            // Normal division (unsigned)
+            #expect(a.dividedReportingOverflow(lhs: UInt64.max, rhs: UInt64(1)) == (UInt64.max, false), "UInt64.max / 1 should return (UInt64.max, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64.min, rhs: UInt64(1)) == (UInt64.min, false), "UInt64.min / 1 should return (UInt64.min, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(0), rhs: UInt64(1)) == (0, false), "0 / 1 should return (0, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(2)) == (50, false), "100 / 2 should return (50, false)")
+            
+            // Division with same values (unsigned)
+            #expect(a.dividedReportingOverflow(lhs: UInt64.max, rhs: UInt64.max) == (1, false), "UInt64.max / UInt64.max should return (1, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(1), rhs: UInt64.max) == (0, false), "1 / UInt64.max should return (0, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64(100), rhs: UInt64(200)) == (0, false), "100 / 200 should return (0, false)")
+            #expect(a.dividedReportingOverflow(lhs: UInt64.min, rhs: UInt64.min) == (0, true), "0 / 0 should return (0, true)")
+        }
+        
+        for bit in Int64(1)...Int64(64) {
+            if let a = CustomInteger(for: bit) {
+                let sMin = a.ranges.signed.lowerBound
+                let sMax = a.ranges.signed.upperBound
+                let uMin = a.ranges.unsigned.lowerBound
+                let uMax = a.ranges.unsigned.upperBound
+                
+//                print("Testing bit width: \(bit), signed range: \(sMin)...\(sMax), unsigned range: \(uMin)...\(uMax)")
+                
+                switch bit {
+                    case 1:
+                        // 1-bit integers (signed: -1, 0; unsigned: 0, 1)
+                        #expect(a.dividedReportingOverflow(lhs: 0, rhs: 0) == (0, true), "0 / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: 1, rhs: 0) == (0, true), "1 / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: -1, rhs: 0) == (0, true), "-1 / 0 should return (0, true)")
+                        
+                        #expect(a.dividedReportingOverflow(lhs: uMax, rhs: 1) == (uMax, false), "uMax / 1 should return (uMax, false)")
+                        
+                    case 2:
+                        // 2-bit integers (signed: -2, -1, 0, 1; unsigned: 0, 1, 2, 3)
+                        #expect(a.dividedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "sMin / -1 should overflow")
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: -1) == (-sMax, false), "sMax / -1 should return (-sMax, false)")
+                        
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: 2) == (sMax / 2, false), "sMax / 2 should return (sMax / 2, false)")
+                        #expect(a.dividedReportingOverflow(lhs: uMax, rhs: 2) == (uMax / 2, false), "uMax / 2 should return (uMax / 2, false)")
+                        
+                    case 3...Int64.max:
+                        // 3-bit and higher integers
+                        // Division by zero (signed and unsigned)
+                        #expect(a.dividedReportingOverflow(lhs: 0, rhs: 0) == (0, true), "0 / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: 1, rhs: 0) == (0, true), "1 / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: -1, rhs: 0) == (0, true), "-1 / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: uMin, rhs: 0) == (0, true), "uMin / 0 should return (0, true)")
+                        #expect(a.dividedReportingOverflow(lhs: uMax, rhs: 0) == (0, true), "uMax / 0 should return (0, true)")
+                        
+                        // Normal division (signed)
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: 1) == (sMax, false), "sMax / 1 should return (sMax, false)")
+                        #expect(a.dividedReportingOverflow(lhs: sMin, rhs: 1) == (sMin, false), "sMin / 1 should return (sMin, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 0, rhs: 1) == (0, false), "0 / 1 should return (0, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 100, rhs: 2) == (50, false), "100 / 2 should return (50, false)")
+                        
+                        // Overflow for signed integers (sMin / -1)
+                        #expect(a.dividedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "sMin / -1 should overflow")
+                        
+                        // Edge cases (signed)
+                        #expect(a.dividedReportingOverflow(lhs: sMin, rhs: 2) == (sMin / 2, false), "sMin / 2 should return (sMin / 2, false)")
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: -1) == (-sMax, false), "sMax / -1 should return (-sMax, false)")
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: -2) == (sMax / -2, false), "sMax / -2 should return (sMax / -2, false)")
+                        #expect(a.dividedReportingOverflow(lhs: -10, rhs: -2) == (5, false), "-10 / -2 should return (5, false)")
+                        
+                        // Division with same values (signed)
+                        #expect(a.dividedReportingOverflow(lhs: sMax, rhs: sMax) == (1, false), "sMax / sMax should return (1, false)")
+                        #expect(a.dividedReportingOverflow(lhs: sMin, rhs: sMin) == (1, false), "sMin / sMin should return (1, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 1, rhs: 1) == (1, false), "1 / 1 should return (1, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 100, rhs: 100) == (1, false), "100 / 100 should return (1, false)")
+                        
+                        // Safe division near sMin (signed)
+                        #expect(a.dividedReportingOverflow(lhs: sMin + 1, rhs: -1) == (-(sMin + 1), false), "(sMin + 1) / -1 should return (-(sMin + 1), false)")
+                        #expect(a.dividedReportingOverflow(lhs: sMin + 2, rhs: -1) == (-(sMin + 2), false), "(sMin + 2) / -1 should return (-(sMin + 2), false)")
+                        
+                        // Safe division within range (signed)
+                        #expect(a.dividedReportingOverflow(lhs: sMax / 2, rhs: 2) == (sMax / 4, false), "(sMax / 2) / 2 should return (sMax / 4, false)")
+                        
+                        // Normal division (unsigned)
+                        #expect(a.dividedReportingOverflow(lhs: uMax, rhs: 1) == (uMax, false), "uMax / 1 should return (uMax, false)")
+                        #expect(a.dividedReportingOverflow(lhs: uMin, rhs: 1) == (uMin, false), "uMin / 1 should return (uMin, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 100, rhs: 2) == (50, false), "100 / 2 should return (50, false)")
+                        
+                        // Division with same values (unsigned)
+                        #expect(a.dividedReportingOverflow(lhs: uMax, rhs: uMax) == (1, false), "uMax / uMax should return (1, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 1, rhs: uMax) == (0, false), "1 / uMax should return (0, false)")
+                        #expect(a.dividedReportingOverflow(lhs: 100, rhs: 200) == (0, false), "100 / 200 should return (0, false)")
+                        
+                    default:
+                        break
+                }
+            }
+        }
+        
+    }
+    
+    @Test func remainderReportingOverflow_Tests() {
+        
+        for bit in Int64(1)...Int64(64) {
+            if let a = CustomInteger(for: bit) {
+                let sMin = a.ranges.signed.lowerBound
+                let sMax = a.ranges.signed.upperBound
+                let uMin = a.ranges.unsigned.lowerBound
+                let uMax = a.ranges.unsigned.upperBound
+                
+//                print("Testing bit width: \(bit), signed range: \(sMin)...\(sMax), unsigned range: \(uMin)...\(uMax)")
+                
+                switch bit {
+                    case 1:
+                        // 1-bit integers (signed: -1, 0; unsigned: 0, 1)
+                        #expect(a.remainderReportingOverflow(lhs: sMin, rhs: 0) == (0, true))  // sMin % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: 0) == (0, true))  // sMax % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: uMin, rhs: 0) == (0, true))  // uMin % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 0) == (0, true))  // uMax % 0 (division by zero)
+                        
+                        #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 2) == (uMax % 2, false))  // uMax % 2
+                        
+                    case 2:
+                        // 2-bit integers (signed: -2, -1, 0, 1; unsigned: 0, 1, 2, 3)
+                        #expect(a.remainderReportingOverflow(lhs: sMin, rhs: -1) == (0, true))  // sMin % -1 (overflow)
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: -1) == (0, false)) // sMax % -1 (no overflow)
+                        
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: 2) == (sMax % 2, false))  // sMax % 2
+                        #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 2) == (uMax % 2, false))  // uMax % 2
+                        
+                    case 3...Int64.max:
+                        // 3-bit and higher integers
+                        // Test intermediate values
+                        let midSigned = sMin / 2 + sMax / 2
+                        let midUnsigned = uMin / 2 + uMax / 2
+                        
+                        #expect(a.remainderReportingOverflow(lhs: midSigned, rhs: 2) == (midSigned % 2, false))  // midSigned % 2
+                        #expect(a.remainderReportingOverflow(lhs: midUnsigned, rhs: 2) == (midUnsigned % 2, false))  // midUnsigned % 2
+                        
+                        // Test values just above/below the minimum and maximum
+                        #expect(a.remainderReportingOverflow(lhs: sMin + 1, rhs: 2) == ((sMin + 1) % 2, false))  // (sMin + 1) % 2
+                        #expect(a.remainderReportingOverflow(lhs: sMax - 1, rhs: 2) == ((sMax - 1) % 2, false))  // (sMax - 1) % 2
+                        #expect(a.remainderReportingOverflow(lhs: uMin + 1, rhs: 2) == ((uMin + 1) % 2, false))  // (uMin + 1) % 2
+                        #expect(a.remainderReportingOverflow(lhs: uMax - 1, rhs: 2) == ((uMax - 1) % 2, false))  // (uMax - 1) % 2
+                        
+                        // Test division by zero
+                        #expect(a.remainderReportingOverflow(lhs: sMin, rhs: 0) == (0, true))  // sMin % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: 0) == (0, true))  // sMax % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: uMin, rhs: 0) == (0, true))  // uMin % 0 (division by zero)
+                        #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 0) == (0, true))  // uMax % 0 (division by zero)
+                        
+                        // Test division by -1
+                        #expect(a.remainderReportingOverflow(lhs: sMin, rhs: -1) == (0, true))  // sMin % -1 (overflow)
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: -1) == (0, false)) // sMax % -1 (no overflow)
+                        
+                        // Test maximum value
+                        #expect(a.remainderReportingOverflow(lhs: sMax, rhs: 2) == (sMax % 2, false))  // sMax % 2
+                        #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 2) == (uMax % 2, false))  // uMax % 2
+                        
+                    default:
+                        break
+                }
+            }
         }
     }
     

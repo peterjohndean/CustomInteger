@@ -74,6 +74,7 @@ public struct CustomInteger {
     
     /// - Returns: true, if the data type is within it's own min...max range.
     @inlinable
+    @inline(__always)
     public func isInRange<T: BinaryInteger>(_ value: T) -> Bool {
         return T.isSigned
         ? ranges.signed.contains(Int(value))    // Signed
@@ -82,19 +83,36 @@ public struct CustomInteger {
     
     /// - Returns: true, if the data type is signed and negative
     @inlinable
+    @inline(__always)
     public func isSigned<T: BinaryInteger>(_ value: T) -> Bool {
         return T.isSigned /* Unsigned always false */ && (Int(value) & masks.signedBit) != 0
     }
     
     /// - Returns: true, if both types are the same and both signs are opposite.
     @inlinable
+    @inline(__always)
     public func isSignOpposite<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
         return T.isSigned /* Unsigned integer always false */ && (lhs ^ rhs) < 0
     }
     
     /// - Returns: true, if both data types are the same and have the same signs.
     @inlinable
+    @inline(__always)
     public func isSignSame<T: BinaryInteger>(lhs: T, rhs: T) -> Bool {
         return !T.isSigned /* Unsigned integer always true */ || (lhs ^ rhs) >= 0
+    }
+    
+    /// - Returns: A signed truncated bit width value.
+    @inlinable
+    @inline(__always)
+    internal func toSignedBitWidth(_ result: Int) -> Int {
+        return ((result & masks.signed) ^ masks.signedBit) &- masks.signedBit
+    }
+    
+    /// - Returns: An unsigned truncated bit width value.
+    @inlinable
+    @inline(__always)
+    internal func toUnsignedBitWidth(_ result: UInt) -> UInt {
+        return result & masks.unsigned
     }
 }

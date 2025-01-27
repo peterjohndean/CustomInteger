@@ -124,151 +124,84 @@ struct Overflow_Tests {
     }
     
     @Test func addingReportingOverflow_Tests() {
-
-        if let a = CustomInteger(for: 64) {
-            // Signed Integer Tests
-            // Test 1: Negative overflow beyond lower bound
-            #expect(a.addingReportingOverflow(lhs: -1 as Int64, rhs: -Int64.max) == (-9223372036854775808, false))
+        
+        for bit in Int64(1)...Int64(64) {
             
-            // Test 2: Overflow due to adding negative values
-            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775807, false))
-            
-            // Test 3: Positive overflow
-            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
-            
-            // Test 4: Negative underflow
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
-            
-            // Test 5: No overflow (midpoint addition)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2) == (9223372036854775806, false))
-            
-            // Test 6: No overflow (edge case addition)
-            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: (-Int64.max - 1) / 2) == (-9223372036854775808, false))
-            
-            // Test 7: No overflow (adding zero to min)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
-            
-            // Test 8: No overflow (adding 1 to min)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 1) == (-9223372036854775807, false))
-            
-            // Test 9: No overflow (adding zero to max)
-            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
-            
-            // Test 10: No overflow (subtracting 1 from max)
-            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: -1) == (9223372036854775806, false))
-            
-            // Test 11: Negative overflow (edge case)
-            #expect(a.addingReportingOverflow(lhs: -1, rhs: -Int64.max) == (-9223372036854775808, false))
-            
-            // Test 12: No overflow (edge case addition)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
-            
-            // Test 13: No overflow (midpoint addition for negatives)
-            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: -Int64.max / 2) == (-9223372036854775806, false))
-            
-            // Test 14: No overflow (beyond midpoint for negatives)
-            #expect(a.addingReportingOverflow(lhs: -Int64.max / 2, rhs: (-Int64.max / 2) - 1) == (-9223372036854775807, false))
-            
-            // Test 15: No overflow (adding zero to zero)
-            #expect(a.addingReportingOverflow(lhs: 0, rhs: 0) == (0, false))
-            
-            // Test 16: No overflow (opposite signs cancel out)
-            #expect(a.addingReportingOverflow(lhs: 1, rhs: -1) == (0, false))
-            
-            // Test 17: No overflow (Int64.min + Int64.max = -1)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
-            
-            // Unsigned Integer Tests
-            // Test 18: Overflow (UInt64.max + 1)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
-            
-            // Test 19: No overflow (UInt64.max + 0)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
-            
-            // Test 20: No overflow (UInt64.max - 1 + 1)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max - 1, rhs: 1) == (18446744073709551615, false))
-            
-            // Test 21: No overflow (0 + UInt64.max)
-            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
-            
-            // Test 22: No overflow (1 + (UInt64.max - 1))
-            #expect(a.addingReportingOverflow(lhs: 1, rhs: UInt64.max - 1) == (18446744073709551615, false))
-            
-            // Test 23: No overflow (midpoint addition)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2) == (18446744073709551614, false))
-            
-            // Test 24: No overflow (edge case addition)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
-            
-            // Test 25: No overflow (0 + 0)
-            #expect(a.addingReportingOverflow(lhs: 0, rhs: 0) == (0, false))
-            
-            // Test 26: No overflow (1 + 0)
-            #expect(a.addingReportingOverflow(lhs: 1, rhs: 0) == (1, false))
-            
-            // Test 27: No overflow (0 + UInt64.max)
-            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
-            
-            // Mixed Tests
-            // Test 28: Positive overflow (Int64.max - 1 + 2)
-            #expect(a.addingReportingOverflow(lhs: Int64.max - 1, rhs: 2) == (-9223372036854775808, true))
-            
-            // Test 29: Negative overflow (Int64.min + 1 - 2)
-            #expect(a.addingReportingOverflow(lhs: Int64.min + 1, rhs: -2) == (9223372036854775807, true))
-            
-            // Test 30: Positive overflow (Int64.max + 1)
-            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 1) == (-9223372036854775808, true))
-            
-            // Test 31: Negative overflow (Int64.min - 1)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: -1) == (9223372036854775807, true))
-            
-            // Test 32: No overflow (Int64.max / 2 + Int64.max / 2 + 1)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: Int64.max / 2 + 1) == (9223372036854775807, false))
-            
-            // Test 33: No overflow (Int64.min / 2 + (-Int64.max / 2 - 1))
-            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: -Int64.max / 2 - 1) == (-9223372036854775808, false))
-            
-            // Test 34: No overflow (Int64.max / 2 + -Int64.max / 2)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
-            
-            // Test 35: No overflow (Int64.max / 2 + -Int64.max)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max) == (-4611686018427387904, false))
-            
-            // Test 36: No overflow (Int64.min + Int64.max)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: Int64.max) == (-1, false))
-            
-            // Test 37: No overflow (UInt64.max / 2 + UInt64.max / 2 + 1)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: UInt64.max / 2 + 1) == (18446744073709551615, false))
-            
-            // Test 38: Overflow (UInt64.max + 1)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 1) == (0, true))
-            
-            // Test 39: Overflow (UInt64.max - 1 + 2)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max - 1, rhs: 2) == (0, true))
-            
-            // Test 40: No overflow (0 + UInt64.max)
-            #expect(a.addingReportingOverflow(lhs: 0, rhs: UInt64.max) == (18446744073709551615, false))
-            
-            // Test 41: No overflow (Int64.max + 0)
-            #expect(a.addingReportingOverflow(lhs: Int64.max, rhs: 0) == (9223372036854775807, false))
-            
-            // Test 42: No overflow (Int64.min + 0)
-            #expect(a.addingReportingOverflow(lhs: Int64.min, rhs: 0) == (-9223372036854775808, false))
-            
-            // Test 43: No overflow (UInt64.max + 0)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max, rhs: 0) == (18446744073709551615, false))
-            
-            // Test 44: No overflow (Int64.max / 2 + 0)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: 0) == (4611686018427387903, false))
-            
-            // Test 45: No overflow (Int64.min / 2 + 0)
-            #expect(a.addingReportingOverflow(lhs: Int64.min / 2, rhs: 0) == (-4611686018427387904, false))
-            
-            // Test 46: No overflow (UInt64.max / 2 + 0)
-            #expect(a.addingReportingOverflow(lhs: UInt64.max / 2, rhs: 0) == (9223372036854775807, false))
-            
-            // Test 47: No overflow (Int64.max / 2 + -Int64.max / 2)
-            #expect(a.addingReportingOverflow(lhs: Int64.max / 2, rhs: -Int64.max / 2) == (0, false))
+            if let a = CustomInteger(for: bit) {
+                let sMin = a.ranges.signed.lowerBound
+                let sMax = a.ranges.signed.upperBound
+                let uMin = a.ranges.unsigned.lowerBound
+                let uMax = a.ranges.unsigned.upperBound
+                
+//                print("Testing bit width: \(bit), signed range: \(sMin)...\(sMax), unsigned range: \(uMin)...\(uMax)")
+                
+                // Common test cases for all bit widths
+                #expect(a.addingReportingOverflow(lhs: sMax, rhs: 1) == (sMin, true), "sMax + 1 should overflow to sMin")
+                #expect(a.addingReportingOverflow(lhs: sMin, rhs: -1) == (sMax, true), "sMin + -1 should overflow to sMax")
+                #expect(a.addingReportingOverflow(lhs: sMax - 1, rhs: 1) == (sMax, false), "(sMax - 1) + 1 should return sMax without overflow")
+                
+                // Adding 0 should not cause overflow for both signed and unsigned cases.
+                #expect(a.addingReportingOverflow(lhs: sMin, rhs: 0) == (sMin, false), "sMin + 0 should not overflow")
+                #expect(a.addingReportingOverflow(lhs: sMax, rhs: 0) == (sMax, false), "sMax + 0 should not overflow")
+                
+                // Adding a positive and a negative number should not overflow, even if they are large.
+                #expect(a.addingReportingOverflow(lhs: 1, rhs: -1) == (0, false), "1 + -1 should not overflow")
+                
+                // Switch for bit-specific overflow checks
+                switch bit {
+                    case 1:
+                        // 1-bit integers (signed: -1, 0; unsigned: 0, 1)
+                        #expect(a.addingReportingOverflow(lhs: 0, rhs: 0) == (0, false), "0 + 0 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: uMin, rhs: 0) == (0, false), "uMin + 0 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: uMin, rhs: 1) == (1, false), "uMin + 1 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: uMax, rhs: uMax) == (0, true), "1 + 1 should overflow for 1-bit unsigned integers")
+                        #expect(a.addingReportingOverflow(lhs: -1, rhs: -1) == (0, true), "-1 + -1 should overflow for 1-bit signed integers")
+                        #expect(a.addingReportingOverflow(lhs: -1, rhs: 1) == (0, false), "-1 + 1 should not overflow")
+                        
+                    case 2:
+                        // 2-bit integers (signed: -2, -1, 0, 1; unsigned: 0, 1, 2, 3)
+                        #expect(a.addingReportingOverflow(lhs: -2, rhs: -2) == (0, true), "sMin + sMin should overflow with partialValue 0")
+                        #expect(a.addingReportingOverflow(lhs: -2, rhs: -1) == (-3 & 0b11, true), "sMin + -1 should overflow")
+                        #expect(a.addingReportingOverflow(lhs: -2, rhs: 1) == (-1, false), "sMin + 1 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: -1, rhs: -1) == (sMin, false), "-1 + -1 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: 1, rhs: 1) == (sMin, true), "1 + 1 should overflow with partialValue 0")
+                        #expect(a.addingReportingOverflow(lhs: sMin, rhs: 1) == (sMin &+ 1, false), "sMin + 1 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: -1) == (sMax &+ -1, false), "sMax + -1 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: 1) == (-(sMax &+ 1), true), "sMax + 1 should overflow with negative partialValue")
+                        #expect(a.addingReportingOverflow(lhs: uMax, rhs: 1) == (0, true), "uMax + 1 should overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMin, rhs: sMin) == (((sMin &+ sMin) & a.masks.signed), true), "sMin + sMin overflow")
+                        #expect(a.addingReportingOverflow(lhs: UInt(2), rhs: 1) == (3, false), "2 + 1 should not overflow")
+                        
+                    case 3:
+                        // 3-bit signed and unsigned overflow cases
+                        #expect(a.addingReportingOverflow(lhs: sMin, rhs: sMin) == ((sMin &+ sMin) & a.masks.signed, true), "Overflow for signed 3-bit: sMin + sMin")
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: 1) == (-(sMax &+ 1), true), "Overflow for signed 3-bit: sMax + 1")
+                        #expect(a.addingReportingOverflow(lhs: uMax, rhs: 1) == (0, true), "Overflow for unsigned 3-bit: uMax + 1")
+                        
+                    case 4:
+                        // 4-bit signed and unsigned overflow cases
+                        #expect(a.addingReportingOverflow(lhs: sMin, rhs: 2) == (((sMin &+ 2) & a.masks.signed) ^ a.masks.signedBit - a.masks.signedBit, false), "Overflow for signed 4-bit: sMin + 2")
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: -1) == (sMax &+ -1, false), "No overflow for signed 4-bit: sMax + -1")
+                        #expect(a.addingReportingOverflow(lhs: uMax, rhs: uMax) == (0, true), "Overflow for unsigned 4-bit: uMax + uMax")
+                        
+                    case 5...64:
+                        // Overflow for larger bit widths
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: 1) == (a.toSignedBitWidth(sMax &+ 1), true), "sMax + 1 should overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMin, rhs: -1) == (a.toSignedBitWidth(sMin &+ -1), true), "sMin + -1 should overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMax, rhs: sMax) == (a.toSignedBitWidth(sMax &+ sMax), true), "sMax + sMax should overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMax / 2, rhs: sMax / 2) == (a.toSignedBitWidth((sMax / 2) &+ (sMax / 2)), false), "sMax / 2 + sMax / 2 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: sMax / 2, rhs: sMax / 2 + 2) == (a.toSignedBitWidth((sMax / 2) &+ (sMax / 2 + 2)), true), "sMax / 2 + (sMax / 2 + 2) should overflow")
+                        
+                        #expect(a.addingReportingOverflow(lhs: uMax, rhs: 1) == (0, true), "uMax + 1 should overflow")
+                        #expect(a.addingReportingOverflow(lhs: uMax / 2, rhs: uMax / 2) == (a.toUnsignedBitWidth((uMax / 2) &+ (uMax / 2)), false), "uMax / 2 + uMax / 2 should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: uMax / 2, rhs: uMax / 2 + 2) == (a.toUnsignedBitWidth((uMax / 2) &+ (uMax / 2 + 2)), true), "uMax / 2 + (uMax / 2 + 2) should overflow")
+                        #expect(a.addingReportingOverflow(lhs: 0, rhs: uMax) == (uMax, false), "0 + uMax should not overflow")
+                        #expect(a.addingReportingOverflow(lhs: 1, rhs: uMax) == (0, true), "1 + uMax should overflow")
+                        
+                    default:
+                        break
+                }
+            }
         }
     }
     

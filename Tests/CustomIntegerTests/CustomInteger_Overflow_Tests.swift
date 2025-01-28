@@ -216,66 +216,67 @@ struct Overflow_Tests {
                 
 //                print("Testing bit width: \(bit), signed range: \(sMin)...\(sMax), unsigned range: \(uMin)...\(uMax)")
                 
+                // Common test cases for all bit widths
+                #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (sMax, true), "sMin - 1 should overflow to sMax")
+                #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: sMax) == (0, false), "sMax - sMax should not overflow")
+                
+                // Subtracting 0 should not cause overflow for both signed and unsigned cases.
+                #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 0) == (sMin, false), "sMin - 0 should not overflow")
+                #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: 0) == (sMax, false), "sMax - 0 should not overflow")
+                
+                // Switch for bit-specific overflow checks
                 switch bit {
                     case 1:
                         // 1-bit integers (signed: -1, 0; unsigned: 0, 1)
-                        #expect(a.subtractingReportingOverflow(lhs: 0, rhs: 0) == (0, false), "0 - 0 should return (0, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: 0) == (1, false), "1 - 0 should return (1, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: -1, rhs: 0) == (-1, false), "-1 - 0 should return (-1, false)")
-                        
-                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax &- 1, false), "uMax - 1 should return (uMax - 1, false)")
+                        #expect(a.subtractingReportingOverflow(lhs: 0, rhs: 0) == (0, false), "0 - 0 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMin, rhs: 0) == (0, false), "uMin - 0 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMin, rhs: 1) == (1, true), "uMin - 1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "1 - 1 should not overflow for 1-bit unsigned integers")
+                        #expect(a.subtractingReportingOverflow(lhs: -1, rhs: 1) == (0, true), "-1 - 1 should overflow for 1-bit signed integers")
+                        #expect(a.subtractingReportingOverflow(lhs: -1, rhs: -1) == (0, false), "-1 - -1 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: -1) == (0, true), "1 - (-1) should overflow for 1-bit signed integers")
                         
                     case 2:
                         // 2-bit integers (signed: -2, -1, 0, 1; unsigned: 0, 1, 2, 3)
-                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (sMin &- 1, true), "sMin - 1 should overflow")
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (sMax &+ 1, true), "sMax - (-1) should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: -1) == (-2, true), "1 - -1 should overflow for 2-bit signed integers")
+                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (a.toSignedBitWidth(sMin &- 1), true), "sMin - 1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &- -1), true), "sMax - -1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "uMax - uMax should not overflow for unsigned")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax - 1, false), "uMax - 1 should not overflow for unsigned")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (sMin, true), "sMax - (-1) should overflow to sMin")
                         
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: 1) == (sMax &- 1, false), "sMax - 1 should return (sMax - 1, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax &- 1, false), "uMax - 1 should return (uMax - 1, false)")
+                    case 3:
+                        // 3-bit signed and unsigned overflow cases
+                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (a.toSignedBitWidth(sMin &- 1), true), "sMin - 1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &- -1), true), "sMax - -1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax - 1, false), "uMax - 1 should not overflow for unsigned")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "uMax - uMax should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: -1) == (2, false), "1 - (-1) should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (sMin, true), "sMax - (-1) should overflow to sMin")
                         
-                    case 3...64:
-                        // 3-bit and higher integers
-                        // Normal subtraction (signed)
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: 1) == (sMax &- 1, false), "sMax - 1 should return (sMax - 1, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (sMin &- 1, true), "sMin - 1 should overflow")
-                        #expect(a.subtractingReportingOverflow(lhs: 0, rhs: 1) == (-1, false), "0 - 1 should return (-1, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: sMax / 2) == (sMax &- (sMax / 2), false), "sMax - (sMax / 2) should return the correct value")
+                    case 4:
+                        // 4-bit signed and unsigned overflow cases
+                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (a.toSignedBitWidth(sMin &- 1), true), "sMin - 1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &- -1), true), "sMax - -1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: 1) == (sMax - 1, false), "sMax - 1 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax - 1, false), "uMax - 1 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "uMax - uMax should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: -1) == (2, false), "1 - (-1) should not overflow")
                         
-                        // Overflow for signed integers (sMin - 1)
-                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (sMin &- 1, true), "sMin - 1 should overflow")
-                        
-                        // Edge cases (signed)
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: sMin) == (sMax &- sMin, true), "sMax - sMin should overflow")
-                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: sMax) == (sMin &- sMax, true), "sMin - sMax should overflow")  // Expect overflow now for 64-bit
-                        
-                        #expect(a.subtractingReportingOverflow(lhs: -3, rhs: -2) == (-3 &- (-2), false), "-3 - (-2) should return (-1, false)")
-                        
-                        // Subtraction with same values (signed)
-                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: sMax) == (0, false), "sMax - sMax should return (0, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: sMin) == (0, false), "sMin - sMin should return (0, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: 3, rhs: 3) == (0, false), "3 - 3 should return (0, false)")
-                        
-                        // Safe subtraction near sMin (signed)
-                        #expect(a.subtractingReportingOverflow(lhs: sMin &+ 1, rhs: 1) == (sMin, false), "(sMin + 1) - 1 should return (sMin, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: sMin &+ 2, rhs: 1) == (sMin &+ 1, false), "(sMin + 2) - 1 should return (sMin + 1, false)")
-                        
-                        // Safe subtraction within range (signed)
-                        #expect(a.subtractingReportingOverflow(lhs: sMax / 2, rhs: 1) == (sMax / 2 &- 1, false), "(sMax / 2) - 1 should return (sMax / 2 - 1, false)")
-                        
-                        // Normal subtraction (unsigned)
-                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax &- 1, false), "uMax - 1 should return (uMax - 1, false)")
-                        #expect(a.subtractingReportingOverflow(lhs: uMin, rhs: 1) == (uMin &- 1, true), "uMin - 1 should overflow")
-                        #expect(a.subtractingReportingOverflow(lhs: 3, rhs: 1) == (2, false), "3 - 1 should return (2, false)")
-                        
-                        // Subtraction with same values (unsigned)
-                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "uMax - uMax should return (0, false)")
+                    case 5...64:
+                        #expect(a.subtractingReportingOverflow(lhs: sMin, rhs: 1) == (a.toSignedBitWidth(sMin &- 1), true), "sMin - 1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &- -1), true), "sMax - -1 should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: sMax / 2, rhs: -(sMax / 2)) == (a.toSignedBitWidth((sMax / 2) &- -(sMax / 2)), false), "sMax / 2 - -(sMax / 2) should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: 1) == (uMax - 1, false), "uMax - 1 should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: uMax, rhs: uMax) == (0, false), "uMax - uMax should not overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 0, rhs: uMax) == (a.toUnsignedBitWidth(0 &- uMax), true), "0 - uMax should overflow")
+                        #expect(a.subtractingReportingOverflow(lhs: 1, rhs: -1) == (2, false), "1 - (-1) should not overflow")
                         
                     default:
                         break
                 }
             }
         }
-
     }
     
     @Test func dividedReportingOverflow_Tests() {

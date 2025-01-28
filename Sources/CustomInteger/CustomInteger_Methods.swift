@@ -137,32 +137,41 @@ extension CustomInteger {
             let lhs = Int(lhs)
             let rhs = Int(rhs)
             
+            let result = T(toSignedBitWidth(lhs &- rhs))
+            
             // Check for same signs, no risk of overflow
             guard (lhs ^ rhs) < 0 else {
-                return (T(lhs &- rhs), false)
+                return (result, false)
+            }
+            
+            // Check for zero values, no risk of overflow
+            guard rhs != 0 else {
+                return (result, false)
             }
             
             // Check for positive overflow (opposite signs)
-            if lhs > 0 && lhs > ranges.signed.upperBound &+ rhs {
-                return (T(lhs &- rhs), true)
+            if (lhs > 0 && lhs > ranges.signed.upperBound &+ rhs) {
+                return (result, true)
             } else
             // Check for negative overflow (opposit signs)
-            if lhs < 0 && lhs < ranges.signed.lowerBound &+ rhs {
-                return (T(lhs &- rhs), true)
+            if (lhs < 0 && lhs < ranges.signed.lowerBound &+ rhs) {
+                return (result, true)
             }
             
             // No overflow
-            return (T(lhs &- rhs), false)
+            return (result, false)
         } else {
             // Overflow logic for unsigned integers
             let lhs = UInt(lhs)
             let rhs = UInt(rhs)
             
+            let result = T(toUnsignedBitWidth(lhs &- rhs))
+            
             // Check for negative overflow (only same signs ;) )
             if lhs < rhs {
-                return (T(lhs &- rhs), true)
+                return (result, true)
             } else {
-                return (T(lhs &- rhs), false)
+                return (result, false)
             }
         }
     }

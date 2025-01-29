@@ -100,16 +100,16 @@ extension CustomInteger {
             }
             
             // Check for zero values, no risk of overflow
-            guard (ranges.signed.upperBound == 0 || lhs != 0) && rhs != 0 else {
+            guard lhs != 0 && rhs != 0 else {
                 return (result, false)
             }
             
             // Check for positive overflow (same signs)
-            if lhs == ranges.signed.upperBound || (lhs > 0 && lhs > ranges.signed.upperBound &- rhs) {
+            if lhs > 0 && lhs > ranges.signed.upperBound &- rhs {
                 return (result, true)
             } else
             // Check for negative overflow (same signs)
-            if lhs == ranges.signed.lowerBound || (lhs < 0 && lhs < ranges.signed.lowerBound &- rhs) {
+            if lhs < 0 && lhs < ranges.signed.lowerBound &- rhs {
                 return (result, true)
             }
             
@@ -178,8 +178,10 @@ extension CustomInteger {
     
     /// - Returns: A tuple containing the result of the multiplication along with a Boolean value indicating whether overflow occurred.
     public func multipliedReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
+        
+        // Check for multiplication by zero
         guard lhs != 0 && rhs != 0 else {
-            return (0, false) // Multiplication by zero
+            return (0, false)
         }
         
         if T.isSigned {
@@ -187,32 +189,44 @@ extension CustomInteger {
             let lhs = Int(lhs)
             let rhs = Int(rhs)
             
+            let result = T(toSignedBitWidth(lhs &* rhs))
+            
+            // Special case: lhs * -1 can only overflow if lhs is sMin
+            if rhs == -1 {
+                if lhs == ranges.signed.lowerBound {
+                    return (result, true) // Overflow
+                }
+                return (result, false) // No overflow
+            }
+            
             if (lhs ^ rhs) >= 0 {
-                // Same signs
+                // Check same signs overflow
                 if ((lhs > 0 && rhs > 0 && lhs > ranges.signed.upperBound / rhs) || // Positive * Positive
                     (lhs < 0 && rhs < 0 && lhs < ranges.signed.upperBound / rhs)) { // Negative * Negative
-                    return (T(lhs &* rhs), true) // Overflow
+                    return (result, true) // Overflow
                 }
             } else {
-                // Opposite signs
+                // Check opposite signs overflow
                 if ((lhs > 0 && rhs < 0 && lhs > ranges.signed.lowerBound / rhs) || // Positive * Negative
                     (lhs < 0 && rhs > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
-                    return (T(lhs &* rhs), true) // Overflow
+                    return (result, true) // Overflow
                 }
             }
             
             // No overflow
-            return (T(lhs &* rhs), false)
+            return (result, false)
             
         } else {
             // Overflow logic for unsigned integers
             let lhs = UInt(lhs)
             let rhs = UInt(rhs)
             
+            let result = T(toUnsignedBitWidth(lhs &* rhs))
+            
             if lhs > ranges.unsigned.upperBound / rhs {
-                return (T(lhs &* rhs), true)
+                return (result, true)
             } else {
-                return (T(lhs &* rhs), false)
+                return (result, false)
             }
         }
     }

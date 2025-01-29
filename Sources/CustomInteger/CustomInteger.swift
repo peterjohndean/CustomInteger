@@ -102,14 +102,16 @@ public struct CustomInteger {
         return !T.isSigned /* Unsigned integer always true */ || (lhs ^ rhs) >= 0
     }
     
-    /// - Returns: A signed truncated bit width value.
+    /// Converts a value to a signed integer of a specific bit width, handling sign extension and truncation.
+    /// - Returns: A signed, truncated bit width value.
     @inlinable
     @inline(__always)
     internal func toSignedBitWidth(_ result: Int) -> Int {
         return ((result & masks.signed) ^ masks.signedBit) &- masks.signedBit
     }
     
-    /// - Returns: An unsigned truncated bit width value.
+    /// Converts a value to an unsigned integer of a specific bit width, handling truncation.
+    /// - Returns: An unsigned, truncated bit width value.
     @inlinable
     @inline(__always)
     internal func toUnsignedBitWidth(_ result: UInt) -> UInt {

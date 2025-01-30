@@ -112,7 +112,8 @@ struct Overflow_Tests {
                 
                 // Additional edge cases for signed integers
                 #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (a.toSignedBitWidth(sMin &* -1), true), "sMin * -1 should overflow for bit width \(bit)")
-                #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                
+                #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 1) == (-1, false), "-1 * 1 should not overflow for bit width \(bit)")
                 
                 // Switch for bit-specific overflow checks
                 switch bit {
@@ -126,6 +127,9 @@ struct Overflow_Tests {
                         #expect(a.multipliedReportingOverflow(lhs: 1, rhs: 0) == (0, false), "1 * 0 should not overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 0) == (0, false), "-1 * 0 should not overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: 2) == (a.toSignedBitWidth(sMin &* 2), true), "sMin * 2 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "-1 * 1 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: sMin) == (sMin, true), "1 * -1 should overflow for bit width \(bit)")
                         
                     case 2:
                         // 2-bit integers (signed: -2, -1, 0, 1; unsigned: 0, 1, 2, 3)
@@ -137,6 +141,11 @@ struct Overflow_Tests {
                         #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: sMax) == (1, false), "sMax * sMax should not overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: 2) == (a.toSignedBitWidth(sMin &* 2), true), "sMin * 2 should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: 2) == (a.toSignedBitWidth(sMax &* 2), true), "sMax * 2 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 1) == (-1, false), "-1 * 1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: 1, rhs: -1) == (-1, false), "1 * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (-2, true), "-1 * 1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: sMin) == (-2, true), "1 * -1 should not overflow for bit width \(bit)")
                         
                     case 3:
                         // 3-bit signed and unsigned overflow cases
@@ -144,12 +153,22 @@ struct Overflow_Tests {
                         #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: sMax) == (1, true), "sMax * sMax should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: uMax, rhs: uMax) == (1, true), "uMax * uMax should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: 2) == (a.toSignedBitWidth(sMax &* 2), true), "sMax * 2 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 1) == (-1, false), "-1 * 1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: 1, rhs: -1) == (-1, false), "1 * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "-1 * 1 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: sMin) == (sMin, true), "1 * -1 should overflow for bit width \(bit)")
                         
                     case 4:
                         // 4-bit signed and unsigned overflow cases
                         #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: 2) == (a.toSignedBitWidth(sMin &* 2), true), "sMin * 2 should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: 2) == (a.toSignedBitWidth(sMax &* 2), true), "sMax * 2 should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: uMax, rhs: 2) == (a.toUnsignedBitWidth(uMax &* 2), true), "uMax * 2 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 1) == (-1, false), "-1 * 1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: 1, rhs: -1) == (-1, false), "1 * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "-1 * 1 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: sMin) == (sMin, true), "1 * -1 should overflow for bit width \(bit)")
                         
                     case 5...64:
                         // Overflow for larger bit widths
@@ -160,6 +179,11 @@ struct Overflow_Tests {
                         #expect(a.multipliedReportingOverflow(lhs: sMax / 2 + 1, rhs: sMax / 2 + 1) == (a.toSignedBitWidth((sMax / 2 + 1) &* (sMax / 2 + 1)), true), "(sMax / 2 + 1) * (sMax / 2 + 1) should overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: uMax / 2, rhs: 2) == (a.toUnsignedBitWidth((uMax / 2) &* 2), false), "(uMax / 2) * 2 should not overflow for bit width \(bit)")
                         #expect(a.multipliedReportingOverflow(lhs: uMax / 2 + 1, rhs: uMax / 2 + 1) == (a.toUnsignedBitWidth((uMax / 2 + 1) &* (uMax / 2 + 1)), true), "(uMax / 2 + 1) * (uMax / 2 + 1) should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMax, rhs: -1) == (a.toSignedBitWidth(sMax &* -1), false), "sMax * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: 1) == (-1, false), "-1 * 1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: 1, rhs: -1) == (-1, false), "1 * -1 should not overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: sMin, rhs: -1) == (sMin, true), "-1 * 1 should overflow for bit width \(bit)")
+                        #expect(a.multipliedReportingOverflow(lhs: -1, rhs: sMin) == (sMin, true), "1 * -1 should overflow for bit width \(bit)")
                         
                     default:
                         break

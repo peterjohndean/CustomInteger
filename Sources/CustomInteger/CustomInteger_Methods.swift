@@ -191,12 +191,12 @@ extension CustomInteger {
             
             let result = T(toSignedBitWidth(lhs &* rhs))
             
-            // Special case: lhs * -1 can only overflow if lhs is sMin
-            if rhs == -1 {
-                if lhs == ranges.signed.lowerBound {
-                    return (result, true) // Overflow
+            // Special case: lowerBound * -1 or -1 * lowerBound, overflows
+            if (lhs ^ rhs) >= 0 /* Check for same signs */ && (lhs & masks.signedBit) != 0 /* Check if negative */ {
+                if (lhs == -1 && rhs == ranges.signed.lowerBound) ||
+                    (rhs == -1 && lhs == ranges.signed.lowerBound) {
+                    return (result, true)
                 }
-                return (result, false) // No overflow
             }
             
             if (lhs ^ rhs) >= 0 {
@@ -205,12 +205,16 @@ extension CustomInteger {
                     (lhs < 0 && rhs < 0 && lhs < ranges.signed.upperBound / rhs)) { // Negative * Negative
                     return (result, true) // Overflow
                 }
-            } else {
-                // Check opposite signs overflow
-                if ((lhs > 0 && rhs < 0 && lhs > ranges.signed.lowerBound / rhs) || // Positive * Negative
-                    (lhs < 0 && rhs > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
-                    return (result, true) // Overflow
-                }
+            } else
+            // Special case 1 * -1 or -1 * 1, no overflow
+            if (lhs == 1 && rhs == -1) || (lhs == -1 && rhs == 1) {
+                return (result, false) // No overflow
+            }
+            
+            // Check opposite signs overflow
+            if ((lhs > 0 && rhs < 0 && rhs > ranges.signed.lowerBound / lhs) || // Positive * Negative
+                (lhs < 0 && rhs > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
+                return (result, true) // Overflow
             }
             
             // No overflow

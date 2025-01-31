@@ -153,7 +153,7 @@ extension CustomInteger {
             if (lhs > 0 && lhs > ranges.signed.upperBound &+ rhs) {
                 return (result, true)
             } else
-            // Check for negative overflow (opposit signs)
+            // Check for negative overflow (opposite signs)
             if (lhs < 0 && lhs < ranges.signed.lowerBound &+ rhs) {
                 return (result, true)
             }
@@ -179,7 +179,7 @@ extension CustomInteger {
     /// - Returns: A tuple containing the result of the multiplication along with a Boolean value indicating whether overflow occurred.
     public func multipliedReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
         
-        // Check for multiplication by zero
+        // Special case: Multiplication by zero (applies to both Int & UInt)
         guard lhs != 0 && rhs != 0 else {
             return (0, false)
         }
@@ -191,29 +191,41 @@ extension CustomInteger {
             
             let result = T(toSignedBitWidth(lhs &* rhs))
             
-            // Special case: lowerBound * -1 or -1 * lowerBound, overflows
+            /*
+             Special Notes:
+             - ~lhs == 0, is equivalent to lhs == -1
+             - ~rhs == 0, is equivalent to rhs == -1
+             */
+            // Special case: Int.min * -1 or -1 * Int.min, overflows
             if (lhs ^ rhs) >= 0 /* Check for same signs */ && (lhs & masks.signedBit) != 0 /* Check if negative */ {
-                if (lhs == -1 && rhs == ranges.signed.lowerBound) ||
-                    (rhs == -1 && lhs == ranges.signed.lowerBound) {
+                if (~lhs == 0 && rhs == ranges.signed.lowerBound) ||
+                    (~rhs == 0 && lhs == ranges.signed.lowerBound) {
                     return (result, true)
                 }
             }
             
-            if (lhs ^ rhs) >= 0 {
+            if (lhs ^ rhs) >= 0 /* Check for same signs */ {
+                /*
+                 Special Notes:
+                 - (lhs | rhs) > 0, is equivalent to lhs > 0 && rhs > 0
+                 - (lhs | rhs) < 0, is equivalent to lhs < 0 && rhs < 0
+                 */
                 // Check same signs overflow
-                if ((lhs > 0 && rhs > 0 && lhs > ranges.signed.upperBound / rhs) || // Positive * Positive
-                    (lhs < 0 && rhs < 0 && lhs < ranges.signed.upperBound / rhs)) { // Negative * Negative
+                if (((lhs | rhs) > 0 && lhs > ranges.signed.upperBound / rhs) || // Positive * Positive
+                    ((lhs | rhs) < 0 && lhs < ranges.signed.upperBound / rhs)) { // Negative * Negative
                     return (result, true) // Overflow
                 }
             } else
-            // Special case 1 * -1 or -1 * 1, no overflow
-            if (lhs == 1 && rhs == -1) || (lhs == -1 && rhs == 1) {
-                return (result, false) // No overflow
-            }
-            
+            /*
+             Special Notes:
+             - (lhs ^ rhs) == -2, is equivalent to (lhs == 1 && rhs == -1) || (lhs == -1 && rhs == 1)
+             - (lhs & ~rhs) > 0, is equivalent to lhs > 0 && rhs < 0
+             - (~lhs & rhs) > 0, is equivalent to lhs < 0 && rhs > 0
+             */
             // Check opposite signs overflow
-            if ((lhs > 0 && rhs < 0 && rhs > ranges.signed.lowerBound / lhs) || // Positive * Negative
-                (lhs < 0 && rhs > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
+            if ((lhs ^ rhs) != -2 &&
+                ((lhs & ~rhs) > 0 && rhs > ranges.signed.lowerBound / lhs) || // Positive * Negative
+                ((~lhs & rhs) > 0 && lhs < ranges.signed.lowerBound / rhs)) { // Negative * Positive
                 return (result, true) // Overflow
             }
             

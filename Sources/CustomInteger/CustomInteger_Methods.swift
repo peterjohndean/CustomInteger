@@ -253,16 +253,18 @@ extension CustomInteger {
         guard rhs != 0 else {
             return (0, true)
         }
-        
-        // Overflow logic for signed integers
-        // Overflow occurs when dividing the minimum signed value by -1.
-        // i.e. For 8 bit, -128 / -1 = +128 > than 8-bit max of 127.
-        if T.isSigned && lhs == ranges.signed.lowerBound && rhs == -1 {
-            return (T(ranges.signed.lowerBound), true)
+
+        if T.isSigned {
+            // Overflow logic for signed integers
+            if lhs == ranges.signed.lowerBound && rhs == -1 { // Overflow occurs when dividing `/` the minimum signed value by -1.
+                return (T(ranges.signed.lowerBound), true)
+            }
+            
+            return (T(toSignedBitWidth(Int(lhs) / Int(rhs))), false)
         }
         
         // No overflow
-        return (lhs / rhs, false)
+        return (T(toUnsignedBitWidth(UInt(lhs) / UInt(rhs))), false)
     }
     
     /// - Returns: A tuple containing the result of the remainder operation along with a Boolean value indicating whether overflow occurred.
@@ -272,14 +274,16 @@ extension CustomInteger {
             return (0, true)
         }
         
-        // Overflow logic for signed integers
-        // Check for overflow: minimum value modulus by -1
-        // Int.min % -1 = lhs − (rhs * (lhs / rhs))
-        if T.isSigned && lhs == ranges.signed.lowerBound && rhs == -1 {
-            return (0, true)
+        if T.isSigned {
+            // Overflow logic for signed integers
+            if lhs == ranges.signed.lowerBound && rhs == -1 { // Overflow occurs when dividing `%` the minimum signed value by -1.
+                return (T(ranges.signed.lowerBound), true)
+            }
+            
+            return (T(toSignedBitWidth(Int(lhs) % Int(rhs))), false)
         }
         
         // No overflow
-        return (lhs % rhs, false)
+        return (T(toUnsignedBitWidth(UInt(lhs) % UInt(rhs))), false)
     }
 }

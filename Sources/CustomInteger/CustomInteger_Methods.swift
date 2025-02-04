@@ -19,18 +19,36 @@
 
 extension CustomInteger {
     
-    /// - Returns: true, if value `<<` by will result in a bitwise overflow.
-    public func leftShiftReportingOverflow<T: BinaryInteger>(_ value: T, by shift: T) -> Bool {
-        guard value != 0 && shift > 0 else {
-            return false // No overflow
+    /// - Returns: A tuple containing the result of the shift along with a Boolean value indicating whether overflow occurred.
+    public func shiftLeftReportingOverflow<T: BinaryInteger>(lhs: T, rhs: T) -> (partialValue: T, overflow: Bool) {
+        
+        // Check for zero values, no risk of overflow
+        guard lhs != 0 && rhs != 0 else {
+            return (lhs == 0 ? rhs : lhs, false)
+        }
+    
+        // Check for shift > bitWidth
+        guard rhs < bitWidth else {
+            return (0, true)
         }
         
-        // Adjust bitWidth for signed or unsigned data types.
-        let adjustedBitWidth = T.isSigned
-        ? bitWidth &- 1  // Signed
-        : bitWidth      // Unsigned
-        
-        return shift >= adjustedBitWidth /* Shifts >= bitWidth */ || (value >> (adjustedBitWidth &- Int(shift))) != 0 /* Shifts < bitWidth */
+        if T.isSigned {
+            let lhs = Int(lhs)
+            let rhs = Int(rhs)
+            
+            let result = T(toSignedBitWidth(lhs &<< rhs))
+            let overflow = (lhs >> (bitWidth &- 1 &- rhs)) != 0
+            
+            return (result, overflow)
+        } else {
+            let lhs = UInt(lhs)
+            let rhs = UInt(rhs)
+            
+            let result = T(toUnsignedBitWidth(lhs &<< rhs))
+            let overflow = (lhs >> (UInt(bitWidth) &- rhs)) != 0
+            
+            return (result, overflow)
+        }
     }
     
     /* Integer Overflow Truth Tables

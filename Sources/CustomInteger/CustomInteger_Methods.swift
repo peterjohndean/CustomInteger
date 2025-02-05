@@ -37,7 +37,7 @@ extension CustomInteger {
             let rhs = Int(rhs)
             
             let result = T(toSignedBitWidth(lhs &<< rhs))
-            let overflow = (lhs >> (bitWidth &- 1 &- rhs)) != 0
+            let overflow = (lhs >> (bitWidth &- 1 &- rhs)) != (lhs < 0 ? -1 : 0)
             
             return (result, overflow)
         } else {

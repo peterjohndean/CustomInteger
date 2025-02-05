@@ -35,9 +35,9 @@ struct Overflow_Tests {
             #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  32) == (0, true))   // Shift > bitWidth, overflow
             
             #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  0) == (-1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  31) == (-2147483648, true))   // Maximum shift, overflow
+            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  31) == (-1 << 31, false))   // Maximum shift, overflow
             #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  32) == (0, true))   // Shift > bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  1) == (-2, true))    // Immediate overflow due to all 1's
+            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  1) == (-1 << 1, false))    // Immediate overflow due to all 1's
             
             #expect(a.shiftLeftReportingOverflow(lhs: Int32.max, rhs: 1 ) == (-2, true))      // Overflow by doubling the max value
             #expect(a.shiftLeftReportingOverflow(lhs: Int32.min, rhs: 1 ) == (0, true))      // Overflow by doubling the min value
@@ -65,9 +65,9 @@ struct Overflow_Tests {
             #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  64) == (0, true))   // Shift > bitWidth, overflow
             
             #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  0) == (-1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  63) == (-9223372036854775808, true))   // Maximum shift, overflow
+            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  63) == (-1 << 63, false))   // Maximum shift, overflow
             #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  64) == (0, true))   // Shift > bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  1) == (-2, true))    // Immediate overflow due to all 1's
+            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  1) == (-1 << 1, false))    // Immediate overflow due to all 1's
             
             #expect(a.shiftLeftReportingOverflow(lhs: Int64.max, rhs: 1 ) == (-2, true))      // Overflow by doubling the max value
             #expect(a.shiftLeftReportingOverflow(lhs: Int64.min, rhs: 1 ) == (0, true))      // Overflow by doubling the min value

@@ -24,7 +24,7 @@ extension CustomInteger {
         
         // Check for zero values, no risk of overflow
         guard lhs != 0 && rhs != 0 else {
-            return (lhs == 0 ? rhs : lhs, false)
+            return (lhs << rhs, false)
         }
     
         // Check for shift > bitWidth
@@ -36,7 +36,7 @@ extension CustomInteger {
             let lhs = Int(lhs)
             let rhs = Int(rhs)
             
-            let result = T(toSignedBitWidth(lhs &<< rhs))
+            let result = T(toSignedBitWidth(lhs << rhs))
             let overflow = (lhs >> (bitWidth &- 1 &- rhs)) != (lhs < 0 ? -1 : 0)
             
             return (result, overflow)
@@ -44,7 +44,7 @@ extension CustomInteger {
             let lhs = UInt(lhs)
             let rhs = UInt(rhs)
             
-            let result = T(toUnsignedBitWidth(lhs &<< rhs))
+            let result = T(toUnsignedBitWidth(lhs << rhs))
             let overflow = (lhs >> (UInt(bitWidth) &- rhs)) != 0
             
             return (result, overflow)

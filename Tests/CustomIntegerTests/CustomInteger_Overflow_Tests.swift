@@ -23,64 +23,49 @@ import Testing
 struct Overflow_Tests {
     
     @Test func leftShiftOverflow_Tests() async throws {
-        if let a = CustomInteger(for: 32) {
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int32,  rhs: 0) == (0, false))    // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int32,  rhs: 10) == (10, false))   // Zero value, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int32,  rhs: -1) == (-1, false))   // Negative shift (invalid, no overflow)
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int32,  rhs: 0) == (1, false))    // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int32,  rhs: 31) == (-2147483648, true))    // Maximum shift for signed Int32, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int32,  rhs: 32) == (0, true))    // Shift > bitWidth, always overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  31) == (2147483648, false))  // Maximum safe shift for unsigned
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  32) == (0, true))   // Shift > bitWidth, overflow
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  0) == (-1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  31) == (-1 << 31, false))   // Maximum shift, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  32) == (0, true))   // Shift > bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int32, rhs:  1) == (-1 << 1, false))    // Immediate overflow due to all 1's
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: Int32.max, rhs: 1 ) == (-2, true))      // Overflow by doubling the max value
-            #expect(a.shiftLeftReportingOverflow(lhs: Int32.min, rhs: 1 ) == (0, true))      // Overflow by doubling the min value
-            #expect(a.shiftLeftReportingOverflow(lhs: UInt32.max,  rhs: 1) == (4294967294, true))     // Overflow by doubling the max unsigned value
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int32,  rhs: 100) == (0, true))   // Shift >> bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int32,  rhs: -100) == (268435456, false)) // Negative shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int32,  rhs: 100) == (100, false))  // Zero value, no overflow
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: UInt32.max,  rhs: 1) == (4294967294, true))     // Overflow for maximum unsigned value
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  0) == (1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  31) == (2147483648, false))  // Safe maximum shift
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt32, rhs:  32) == (0, true))   // Overflow for shift == bitWidth
-        }
-        
-        if let a = CustomInteger(for: 64) {
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int64,  rhs: 0) == (0, false))    // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int64,  rhs: 10) == (10, false))   // Zero value, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int64,  rhs: -1) == (-1, false))   // Negative shift (invalid, no overflow)
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int64,  rhs: 0) == (1, false))    // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int64,  rhs: 63) == (-9223372036854775808, true))    // Maximum shift for signed Int64, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int64,  rhs: 64) == (0, true))    // Shift > bitWidth, always overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  63) == (9223372036854775808, false))  // Maximum safe shift for unsigned
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  64) == (0, true))   // Shift > bitWidth, overflow
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  0) == (-1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  63) == (-1 << 63, false))   // Maximum shift, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  64) == (0, true))   // Shift > bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: -1 as Int64, rhs:  1) == (-1 << 1, false))    // Immediate overflow due to all 1's
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: Int64.max, rhs: 1 ) == (-2, true))      // Overflow by doubling the max value
-            #expect(a.shiftLeftReportingOverflow(lhs: Int64.min, rhs: 1 ) == (0, true))      // Overflow by doubling the min value
-            #expect(a.shiftLeftReportingOverflow(lhs: UInt64.max,  rhs: 1) == (18446744073709551614, true))     // Overflow by doubling the max unsigned value
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int64,  rhs: 100) == (0, true))   // Shift >> bitWidth, overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as Int64,  rhs: -100) == (268435456, false)) // Negative shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 0 as Int64,  rhs: 100) == (100, false))  // Zero value, no overflow
-            
-            #expect(a.shiftLeftReportingOverflow(lhs: UInt64.max,  rhs: 1) == (18446744073709551614, true))     // Overflow for maximum unsigned value
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  0) == (1, false))   // No shift, no overflow
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  63) == (9223372036854775808, false))  // Safe maximum shift
-            #expect(a.shiftLeftReportingOverflow(lhs: 1 as UInt64, rhs:  64) == (0, true))   // Overflow for shift == bitWidth
+        for bit in Int64(1)...64 {
+            if let a = CustomInteger(for: bit) {
+                let sMin = a.ranges.signed.lowerBound
+                let sMax = a.ranges.signed.upperBound
+                let uMin = a.ranges.unsigned.lowerBound
+                let uMax = a.ranges.unsigned.upperBound
+                let halfBit = bit / 2
+                
+                #expect(a.shiftLeftReportingOverflow(lhs: 0, rhs: 0) == (0, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: 1, rhs: 0) == (1, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: 0, rhs: 1) == (0, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: UInt(0), rhs: 0) == (0, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: UInt(1), rhs: 0) == (1, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: UInt(0), rhs: 1) == (0, false))
+                
+                #expect(a.shiftLeftReportingOverflow(lhs: 0, rhs: -1) == (0, false))
+                #expect(a.shiftLeftReportingOverflow(lhs: -1, rhs: 0) == (-1, false))
+                
+                #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: -1) == (a.toSignedBitWidth(sMin << -1), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: -1) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << -1), false)))
+                            
+                #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: 0) == (a.toSignedBitWidth(sMin << 0), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: 0) == (a.toSignedBitWidth(sMax << 0), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: 0) == (a.toUnsignedBitWidth(uMin << 0), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: 0) == (a.toUnsignedBitWidth(uMax << 0), false))
+                
+                #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: 1) == (bit == 1 ? (0, true) : (a.toSignedBitWidth(sMin << 1), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: 1) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << 1), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: 1) == (bit == 1 ? (0, false) : (a.toUnsignedBitWidth(uMin << 1), false)))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: 1) == (bit == 1 ? (0, true) : (a.toUnsignedBitWidth(uMax << 1), true)))
+                
+                // Shift by half max bits
+                #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: halfBit) == (bit == 1 ? (-1, false) : (a.toSignedBitWidth(sMin << halfBit), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: halfBit) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << halfBit), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt64(halfBit)) == (a.toUnsignedBitWidth(uMin << halfBit), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt64(halfBit)) == (bit == 1 ? (1, false) : (a.toUnsignedBitWidth(uMax << halfBit), true)))
+                
+                // Shift by max bits
+                #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: bit) == (a.toSignedBitWidth(sMin << bit), true))
+                #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: bit) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << bit), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt64(bit)) == (a.toUnsignedBitWidth(uMin << bit), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt64(bit)) == (a.toUnsignedBitWidth(uMax << bit), true))
+            }
         }
     }
     

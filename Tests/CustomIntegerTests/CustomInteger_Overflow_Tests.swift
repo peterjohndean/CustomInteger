@@ -23,7 +23,7 @@ import Testing
 struct Overflow_Tests {
     
     @Test func leftShiftOverflow_Tests() async throws {
-        for bit in Int64(1)...64 {
+        for bit in 1...64 {
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
@@ -57,20 +57,20 @@ struct Overflow_Tests {
                 // Shift by half max bits
                 #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: halfBit) == (bit == 1 ? (-1, false) : (a.toSignedBitWidth(sMin << halfBit), true)))
                 #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: halfBit) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << halfBit), true)))
-                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt64(halfBit)) == (a.toUnsignedBitWidth(uMin << halfBit), false))
-                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt64(halfBit)) == (bit == 1 ? (1, false) : (a.toUnsignedBitWidth(uMax << halfBit), true)))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt(halfBit)) == (a.toUnsignedBitWidth(uMin << halfBit), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt(halfBit)) == (bit == 1 ? (1, false) : (a.toUnsignedBitWidth(uMax << halfBit), true)))
                 
                 // Shift by max bits
                 #expect(a.shiftLeftReportingOverflow(lhs: sMin, rhs: bit) == (a.toSignedBitWidth(sMin << bit), true))
                 #expect(a.shiftLeftReportingOverflow(lhs: sMax, rhs: bit) == (bit == 1 ? (0, false) : (a.toSignedBitWidth(sMax << bit), true)))
-                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt64(bit)) == (a.toUnsignedBitWidth(uMin << bit), false))
-                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt64(bit)) == (a.toUnsignedBitWidth(uMax << bit), true))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMin, rhs: UInt(bit)) == (a.toUnsignedBitWidth(uMin << bit), false))
+                #expect(a.shiftLeftReportingOverflow(lhs: uMax, rhs: UInt(bit)) == (a.toUnsignedBitWidth(uMax << bit), true))
             }
         }
     }
     
     @Test func multipliedReportingOverflow_Tests() {
-        for bit in Int64(1)...Int64(64) {
+        for bit in 1...64 {
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
@@ -171,7 +171,7 @@ struct Overflow_Tests {
     
     @Test func addingReportingOverflow_Tests() {
         
-        for bit in Int64(1)...Int64(64) {
+        for bit in 1...64 {
             
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
@@ -254,7 +254,7 @@ struct Overflow_Tests {
     
     @Test func subtractingReportingOverflow_Tests() {
         
-        for bit in Int64(1)...Int64(64) {
+        for bit in 1...64 {
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
@@ -328,7 +328,7 @@ struct Overflow_Tests {
     
     @Test func dividedReportingOverflow_Tests() {
         
-        for bit in Int64(1)...Int64(64) {
+        for bit in 1...64 {
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
@@ -415,7 +415,7 @@ struct Overflow_Tests {
     
     @Test func remainderReportingOverflow_Tests() {
         
-        for bit in Int64(1)...Int64(64) {
+        for bit in 1...64 {
             if let a = CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
@@ -442,7 +442,7 @@ struct Overflow_Tests {
                         #expect(a.remainderReportingOverflow(lhs: sMax, rhs: 2) == (sMax % 2, false))  // sMax % 2
                         #expect(a.remainderReportingOverflow(lhs: uMax, rhs: 2) == (uMax % 2, false))  // uMax % 2
                         
-                    case 3...Int64.max:
+                    case 3...Int.max:
                         // 3-bit and higher integers
                         // Test intermediate values
                         let midSigned = sMin / 2 + sMax / 2

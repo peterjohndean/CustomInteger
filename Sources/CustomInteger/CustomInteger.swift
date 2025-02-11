@@ -19,8 +19,8 @@
 
 public struct CustomInteger {
     // Future proofing
-    public typealias Int = Int64
-    public typealias UInt = UInt64
+//    public typealias Int = Int64
+//    public typealias UInt = UInt64
     
     /// Integer size in bits
     public let bitWidth: Int

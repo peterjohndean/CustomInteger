@@ -21,7 +21,7 @@ import Foundation
 
 extension CustomInteger {
     /// Converts an Integer to a formatted radix string.
-    public func radixString<T: FixedWidthInteger>(value: T, radix: Int = 2) -> String {
+    public func radixString<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
         
         // Check value
         guard isInRange(value) else {
@@ -33,8 +33,8 @@ extension CustomInteger {
             return "Invalid radix \(radix) for 2...36"
         }
         
-        // Apply bit width mask
-        let value = value & T(masks.signed)
+        // Mask value to the correct bit-width.
+        let maskedValue = value & (T.isSigned ? T(truncatingIfNeeded: masks.signed) : T(masks.unsigned))
         
         /*
          Compute preallocation size
@@ -173,49 +173,57 @@ extension CustomInteger {
         let minCharacters = Int(ceil(Double(self.bitWidth) / log2Radix))
         let separatorGroup = (radix == 2 || radix == 16) ? 4 : 3
         let separatorCount = (minCharacters - 1) / separatorGroup
-        let preallocSize = minCharacters + separatorCount
+        let preallocSize = minCharacters + separatorCount + (isSigned(value.self) ? 1 : 0)
         
         // Preallocate buffer
         var result = [Character]()
         result.reserveCapacity(preallocSize)
         
+        // Lookup table
+        let digits = Array("0123456789abcdefghijklmnopqrstuvwxyz")
+        
         // Perform conversion
         switch radix {
             case 2:
                 for i in (0..<self.bitWidth).reversed() {
-                    result.append(((value >> i) & 0x1 == 1) ? "1" : "0")
+                    result.append(((maskedValue >> i) & 0x1 == 1) ? "1" : "0")
                     if i % 4 == 0 && i != 0 {
                         result.append("_")
                     }
                 }
                 
-            case 8, 10, 16:
-                let digits = Array("0123456789abcdefghijklmnopqrstuvwxyz")
+            case 16:
+                let nibble = T(radix - 1)
                 let shiftAmount = Int(log2Radix)
                 
                 for i in (0..<minCharacters).reversed() {
-                    result.append(digits[Int((value >> (i * shiftAmount)) & T(radix - 1))])
+                    result.append(digits[Int((maskedValue >> (i * shiftAmount)) & nibble)])
                     if i % separatorGroup == 0 && i != 0 {
                         result.append("_")
                     }
                 }
-            
-//            case 16:
-//                let hexDigits: [Character] = Array("0123456789ABCDEF")
-//                
-//                for i in (0..<max(1, (self.bitWidth + 3) / 4)).reversed() {
-//                    let nibble = (value >> (i * 4)) & 0xF  // Shift and mask
-//                    result.append(hexDigits[Int(nibble)])
-//                    if i % 4 == 0 && i != 0 {
-//                        result.append("_")
-//                    }
-//                }
                 
             default:
-                return "Not Supported"
+                let radixMagnitude = T.Magnitude(radix)
+                var absValue = maskedValue.magnitude
+                var digitCount = 0
+                
+                repeat {
+                    if digitCount > 0 && digitCount % separatorGroup == 0 {
+                        result.append("_")
+                    }
+                    
+                    let digit = Int(absValue % radixMagnitude)
+                    result.append(digits[digit])
+                    
+                    absValue /= radixMagnitude
+                    digitCount += 1
+                } while absValue > 0
+                
+                result = result.reversed()
         }
-        
-        return String(result)
+        //print("bitWidth \(bitWidth), value \(value), radix \(radix) ->", String(value < 0 ? "-" + result : result))
+        return String(value < 0 ? "-" + result : result)
     }
 }
 

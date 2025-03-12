@@ -48,7 +48,7 @@ struct CustomInteger_Tests {
         }
     }
     
-    @Test("Test Radix Conversions for Bit Widths 1 to 64") func testRadixStringConversions() {
+    @Test("Radix Conversions for Bit Widths 1 to 64 With Min/Max BitWidth Values") func testRadixConversionsWithMinMaxBitWidthValues() {
         let radices = [2, 8, 10, 16, 20]
         let expectedResults: [Int /*bitWidth*/: [Int /*radix*/: [(Int /*value*/, String /*result*/)]]] = [
             1:  [2: [(0, "0"), (-1, "-1" )],
@@ -378,13 +378,18 @@ struct CustomInteger_Tests {
                 for radix in radices {
                     if let testCases = expectedResults[bit]?[radix] {
                         for (value, expectedValue) in testCases {
-                            let result = customInt.radixString(value: value, radix: radix)
+                            let result = customInt.radix(value: value, radix: radix)
                             #expect(result == expectedValue, "Value \(value) Failed for bit width \(bit) and radix \(radix). Expected \(expectedValue) but got \(result).")
                         }
                     }
                 }
             }
         }
+    }
+    
+    @Test("Radix Non-Max or Min Tests") func testRadixNonMinMax() {
+        #expect(CustomInteger(for: 5)?.radix(value: -2, radix: 10) == "-2", "Failed for bit width 5 and radix 10")
+        #expect(CustomInteger(for: 12)?.radix(value: -1, radix: 10) == "-1", "Failed for bit width 12 and radix 10")
     }
     
     // MARK: - Benchmark Tests
@@ -394,7 +399,7 @@ struct CustomInteger_Tests {
         
         //            @Test("Benchmark Tight Memory Preallocation")
         func BenchmarkTightMemoryPreallocation_Tests(_ label: String = "") {
-
+            
             print(label)
             
             func benchmarkPreallocation(bitWidth: Int, radix: Int, iterations: Int = 1_000_000) {
@@ -433,7 +438,7 @@ struct CustomInteger_Tests {
             }
         }
         
-//        @Test("Benchmark Tight vs Naive Memory Preallocation")
+        //        @Test("Benchmark Tight vs Naive Memory Preallocation")
         func BenchmarkMemoryPreallocation_Tests(_ label: String = "") {
             
             print(label)
@@ -490,7 +495,7 @@ struct CustomInteger_Tests {
             }
         }
         
-//        @Test("Benchmark Floating-Point vs Integer Log2 Preallocation")
+        //        @Test("Benchmark Floating-Point vs Integer Log2 Preallocation")
         func BenchmarkLog2Preallocation_Tests(_ label: String = "") {
             
             print(label)

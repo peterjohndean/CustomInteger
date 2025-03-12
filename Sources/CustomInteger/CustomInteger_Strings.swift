@@ -21,7 +21,7 @@ import Foundation
 
 extension CustomInteger {
     /// Converts an Integer to a formatted radix string.
-    public func radixString<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
+    public func radix<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
         
         // Check value
         guard isInRange(value) else {
@@ -41,29 +41,29 @@ extension CustomInteger {
          --------------------------
          Memory Preallocation Formulae and Explanation
          General Formula for Any Radix (r):
-            For any radix r, the total character count formula is: ceil(bitWidth / log2(r)) + floor((ceil(bitWidth / log2(r)) - 1) / g)
-            Where:
-                - bitWidth is the number of bits in the value.
-                - r is the radix (base) of the numerical system.
-                - log2(r) converts radix to bit-width equivalence.
-                - g is the separator grouping, which is:
-                - 4 for radix 2 and 16 (grouping every 4 characters).
-                - 3 for radix 8 and 10 (grouping every 3 characters).
+         For any radix r, the total character count formula is: ceil(bitWidth / log2(r)) + floor((ceil(bitWidth / log2(r)) - 1) / g)
+         Where:
+         - bitWidth is the number of bits in the value.
+         - r is the radix (base) of the numerical system.
+         - log2(r) converts radix to bit-width equivalence.
+         - g is the separator grouping, which is:
+         - 4 for radix 2 and 16 (grouping every 4 characters).
+         - 3 for radix 8 and 10 (grouping every 3 characters).
          
          Naive Preallocation Approach:
-            A simpler but less memory-efficient approach is: bitWidth + floor(bitWidth - 1 / g)
-            Where:
-                - The main value requires bitWidth characters.
-                - Separators (_) are added every g characters.
+         A simpler but less memory-efficient approach is: bitWidth + floor(bitWidth - 1 / g)
+         Where:
+         - The main value requires bitWidth characters.
+         - Separators (_) are added every g characters.
          
          Example Comparisons:
          For a 32-bit value:
-            1. Radix 2 (binary):
-                - Tight formula: ceil(32 / log2(2)) + floor((32 - 1) / 4) = 32 + 7 = 39
-                - Naive approach: 32 + floor((32 - 1) / 4) = 32 + 7 = 39
-            2. Radix 16 (hex):
-                - Tight formula: ceil(32 / log2(16)) + floor((8 - 1) / 4) = 8 + 1 = 9
-                - Naive approach: 32 + floor(32 - 1 / 4) = 32 + 7 = 39
+         1. Radix 2 (binary):
+         - Tight formula: ceil(32 / log2(2)) + floor((32 - 1) / 4) = 32 + 7 = 39
+         - Naive approach: 32 + floor((32 - 1) / 4) = 32 + 7 = 39
+         2. Radix 16 (hex):
+         - Tight formula: ceil(32 / log2(16)) + floor((8 - 1) / 4) = 8 + 1 = 9
+         - Naive approach: 32 + floor(32 - 1 / 4) = 32 + 7 = 39
          
          Conclusion:
          On an Apple M2, Tight vs Naive, tight can be up to 20ns slower, but is way more memory efficient.
@@ -205,7 +205,8 @@ extension CustomInteger {
                 
             default:
                 let radixMagnitude = T.Magnitude(radix)
-                var absValue = maskedValue.magnitude
+                // var absValue = maskedValue.magnitude
+                var absValue = value.magnitude
                 var digitCount = 0
                 
                 repeat {

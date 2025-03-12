@@ -388,6 +388,8 @@ struct CustomInteger_Tests {
     }
     
     @Test("Radix Non-Max or Min Tests") func testRadixNonMinMax() {
+        #expect(CustomInteger(for: 5)?.radix(value: -2, radix: 8) == "-2", "Failed for bit width 5 and radix 8")
+        #expect(CustomInteger(for: 12)?.radix(value: -1, radix: 8) == "-1", "Failed for bit width 12 and radix 8")
         #expect(CustomInteger(for: 5)?.radix(value: -2, radix: 10) == "-2", "Failed for bit width 5 and radix 10")
         #expect(CustomInteger(for: 12)?.radix(value: -1, radix: 10) == "-1", "Failed for bit width 12 and radix 10")
     }

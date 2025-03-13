@@ -19,8 +19,49 @@
 
 import Foundation
 
+/*
+ Performing hand or manual calculations for converting base10 to base8.
+ 
+ Convert a Signed Integer to Octal (Two’s Complement)
+ 
+ Given:
+    •    Bit Width = (e.g., 12)
+    •    Value = (e.g., -100)
+    •    Radix = 8 (Octal)
+ 
+ Step 1: Convert Absolute Value to Binary
+ 
+    1. Take the absolute value of the given number: |-100| = 100
+    2. Convert it to binary, ensuring it fits within the bit width: 100₁₀ → 0000 0110 0100₂ (12-bit)
+ 
+ Step 2: Compute Two’s Complement (For Negative Numbers)
+ 
+    Skip this step for positive numbers.
+ 
+    1. Invert all bits (flip 0s to 1s and 1s to 0s): 0000 0110 0100₂ → 1111 1001 1011₂
+    2. Add 1 to the result: 1111 1001 1011₂ + 1 = 1111 1001 1100₂
+    3. Final Two’s Complement Representation: 1111 1001 1100₂
+ 
+ Step 3: Convert to Octal (Radix 8)
+ 
+    1. Group bits into sets of 3 (from right to left): 1111 1001 1100₂ → 111 110 011 100₈
+    2. Convert each 3-bit group to octal: 111 110 011 100₈ → 7 6 3 4₈
+    3. Final Octal Representation: 7634₈
+    4. For signed representation, the correct answer is: -144₈ (since -100₁₀ = -144₈)
+ 
+ */
+
 extension CustomInteger {
     /// Converts an Integer to a formatted radix string.
+    /// All values are checked for the bit-width range before conversion.
+    ///
+    /// - Parameters:
+    ///  - value: The integer value to convert.
+    ///  - radix: The base to convert the integer to (default is binary).
+    /// - Returns: A formatted string representation of the integer (2's complement for base-2 & -16) in the specified radix.
+    ///
+    ///  # Code
+    ///  ```let result = CustomInteger().radix(value: -100, radix: 8) // Output: -144₈, and not 7634₈```
     public func radix<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
         
         // Check value

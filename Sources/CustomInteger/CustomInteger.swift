@@ -23,10 +23,10 @@ public struct CustomInteger: Sendable {
     public let bitWidth: Int
     
     public struct BitWidthRanges: Sendable {
-        /// Signed bitWidth range from -(2^(n - 1)) to 2^(n - 1) - 1
+        /// Signed bitWidth range from -(2⁽ⁿ⁻¹⁾) to 2⁽ⁿ⁻¹⁾ - 1
         public let signed: ClosedRange<Int>
         
-        /// Unsigned bitWidth range from 0 to 2^n - 1
+        /// Unsigned bitWidth range from 0 to 2ⁿ - 1
         public let unsigned: ClosedRange<UInt>
     }
     

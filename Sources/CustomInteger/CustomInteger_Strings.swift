@@ -52,16 +52,19 @@ import Foundation
  */
 
 extension CustomInteger {
-    /// Converts an Integer to a formatted radix string.
-    /// All values are checked for the bit-width range before conversion.
-    ///
-    /// - Parameters:
-    ///  - value: The integer value to convert.
-    ///  - radix: The base to convert the integer to (default is binary).
-    /// - Returns: A formatted string representation of the integer (2's complement for base-2 & -16) in the specified radix.
-    ///
-    ///  # Code
-    ///  ```let result = CustomInteger().radix(value: -100, radix: 8) // Output: -144₈, and not 7634₈```
+    /**
+     Converts an Integer to a formatted radix string.
+     All values are checked for the bit-width range before conversion.
+    
+     - Parameters:
+        - value: The integer value to convert.
+        - radix: The base to convert the integer to (default is binary).
+     
+     - Returns: A formatted string representation of the integer (2's complement for base-2 & -16) in the specified radix.
+    
+     # Code
+     ```let result = CustomInteger().radix(value: -100, radix: 8) // Output: -144₈, and not 7634₈```
+     */
     public func radix<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
         
         // Check value

@@ -58,23 +58,26 @@ extension CustomInteger {
     
      - Parameters:
         - value: The integer value to convert.
-        - radix: The base to convert the integer to (default is binary).
+        - radix: The base to convert the integer to (default is binary). Supported radices from 2 to 36.
      
      - Returns: A formatted string representation of the integer (2's complement for base-2 & -16) in the specified radix.
     
      # Code
      ```let result = CustomInteger().radix(value: -100, radix: 8) // Output: -144₈, and not 7634₈```
      */
-    public func radix<T: BinaryInteger>(value: T, radix: Int = 2) -> String {
+    public func radix<T: BinaryInteger>(value: T, radix: Int = 2) throws -> String {
         
         // Check value
         guard isInRange(value) else {
-            return "Value \(value) out of range for \(Self.self) of width \(self.bitWidth)"
+            //return "Value \(value) out of range for \(Self.self) of width \(self.bitWidth)"
+            throw T.isSigned ?
+            CustomIntegerError.invalidSignedRange(Int(value), ranges.signed, self.bitWidth) :
+            CustomIntegerError.invalidUnsignedRange(UInt(value), ranges.unsigned, self.bitWidth)
         }
         
         // Check radix
         guard (2...36).contains(radix) else {
-            return "Invalid radix \(radix) for 2...36"
+            throw CustomIntegerError.invalidRadix(radix)
         }
         
         // Mask value to the correct bit-width.

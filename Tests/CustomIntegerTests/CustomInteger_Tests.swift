@@ -26,7 +26,7 @@ struct CustomInteger_Tests {
     let onBenchmarkTests = false
     
     @Test func General_Tests() {
-        if let a = CustomInteger(for: 8) {
+        if let a = try? CustomInteger(for: 8) {
             #expect(a.isSigned(-1) == true)
             #expect(a.isSigned(1) == false)
             #expect(a.isSigned(UInt(1)) == false)
@@ -374,11 +374,11 @@ struct CustomInteger_Tests {
         ]
         
         for bit in 1...64 {
-            if let customInt = CustomInteger(for: bit) {
+            if let customInt = try? CustomInteger(for: bit) {
                 for radix in radices {
                     if let testCases = expectedResults[bit]?[radix] {
                         for (value, expectedValue) in testCases {
-                            let result = customInt.radix(value: value, radix: radix)
+                            let result = try? customInt.radix(value: value, radix: radix)
                             #expect(result == expectedValue, "Value \(value) Failed for bit width \(bit) and radix \(radix). Expected \(expectedValue) but got \(result).")
                         }
                     }
@@ -388,10 +388,10 @@ struct CustomInteger_Tests {
     }
     
     @Test("Radix Non-Max or Min Tests") func testRadixNonMinMax() {
-        #expect(CustomInteger(for: 5)?.radix(value: -2, radix: 8) == "-2", "Failed for bit width 5 and radix 8")
-        #expect(CustomInteger(for: 12)?.radix(value: -1, radix: 8) == "-1", "Failed for bit width 12 and radix 8")
-        #expect(CustomInteger(for: 5)?.radix(value: -2, radix: 10) == "-2", "Failed for bit width 5 and radix 10")
-        #expect(CustomInteger(for: 12)?.radix(value: -1, radix: 10) == "-1", "Failed for bit width 12 and radix 10")
+        #expect(try! CustomInteger(for: 5).radix(value: -2, radix: 8) == "-2", "Failed for bit width 5 and radix 8")
+        #expect(try! CustomInteger(for: 12).radix(value: -1, radix: 8) == "-1", "Failed for bit width 12 and radix 8")
+        #expect(try! CustomInteger(for: 5).radix(value: -2, radix: 10) == "-2", "Failed for bit width 5 and radix 10")
+        #expect(try! CustomInteger(for: 12).radix(value: -1, radix: 10) == "-1", "Failed for bit width 12 and radix 10")
     }
     
     // MARK: - Benchmark Tests

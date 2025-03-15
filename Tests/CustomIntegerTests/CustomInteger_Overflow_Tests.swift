@@ -24,7 +24,7 @@ struct Overflow_Tests {
     
     @Test func leftShiftOverflow_Tests() async throws {
         for bit in 1...64 {
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound
@@ -71,7 +71,7 @@ struct Overflow_Tests {
     
     @Test func multipliedReportingOverflow_Tests() {
         for bit in 1...64 {
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound
@@ -173,7 +173,7 @@ struct Overflow_Tests {
         
         for bit in 1...64 {
             
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound
@@ -255,7 +255,7 @@ struct Overflow_Tests {
     @Test func subtractingReportingOverflow_Tests() {
         
         for bit in 1...64 {
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound
@@ -329,7 +329,7 @@ struct Overflow_Tests {
     @Test func dividedReportingOverflow_Tests() {
         
         for bit in 1...64 {
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound
@@ -416,7 +416,7 @@ struct Overflow_Tests {
     @Test func remainderReportingOverflow_Tests() {
         
         for bit in 1...64 {
-            if let a = CustomInteger(for: bit) {
+            if let a = try? CustomInteger(for: bit) {
                 let sMin = a.ranges.signed.lowerBound
                 let sMax = a.ranges.signed.upperBound
                 let uMin = a.ranges.unsigned.lowerBound

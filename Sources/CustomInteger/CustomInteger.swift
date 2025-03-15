@@ -17,15 +17,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-public struct CustomInteger {
-    // Future proofing
-//    public typealias Int = Int64
-//    public typealias UInt = UInt64
+public struct CustomInteger: Sendable {
     
     /// Integer size in bits
     public let bitWidth: Int
     
-    public struct BitWidthRanges {
+    public struct BitWidthRanges: Sendable {
         /// Signed bitWidth range from -(2^(n - 1)) to 2^(n - 1) - 1
         public let signed: ClosedRange<Int>
         
@@ -33,25 +30,25 @@ public struct CustomInteger {
         public let unsigned: ClosedRange<UInt>
     }
     
-    public struct BitWidthMasks {
-        /// Signed bitWidth mask (2^n) - 1
+    public struct BitWidthMasks: Sendable {
+        /// Signed bitWidth mask 2ⁿ - 1
         public let signed: Int
         
-        /// Signed Bit bitWidth mask 2^(n - 1)
+        /// Signed Bit bitWidth mask 2⁽ⁿ⁻¹⁾
         public let signedBit: Int
         
-        /// Unsigned bitWidth mask (2^n) - 1
+        /// Unsigned bitWidth mask 2ⁿ - 1
         public let unsigned: UInt
     }
     
     public let masks: BitWidthMasks
     public let ranges: BitWidthRanges
     
-    public init?(for bits: Int) {
+    public init(for bits: Int) throws {
         
         // Support for 1...64 bitWidths
         guard bits >= 1 && bits <= Int.bitWidth else {
-            return nil
+            throw CustomIntegerError.invalidBitWidth(bits)
         }
         
         bitWidth = bits

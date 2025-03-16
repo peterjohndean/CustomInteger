@@ -48,7 +48,7 @@ struct CustomInteger_Tests {
         }
     }
     
-    @Test("Radix Conversions for Bit Widths 1 to 64 With Min/Max BitWidth Values") func testRadixConversionsWithMinMaxBitWidthValues() {
+    @Test("Radix Conversions for Bit Widths 1 to 64 With Min/Max BitWidth Values") func testRadixConversionsWithMinMaxBitWidthValues() throws {
         let radices = [2, 8, 10, 16, 20]
         let expectedResults: [Int /*bitWidth*/: [Int /*radix*/: [(Int /*value*/, String /*result*/)]]] = [
             1:  [2: [(0, "0"), (-1, "-1" )],
@@ -374,13 +374,12 @@ struct CustomInteger_Tests {
         ]
         
         for bit in 1...64 {
-            if let customInt = try? CustomInteger(for: bit) {
-                for radix in radices {
-                    if let testCases = expectedResults[bit]?[radix] {
-                        for (value, expectedValue) in testCases {
-                            let result = try? customInt.radix(value: value, radix: radix)
-                            #expect(result == expectedValue, "Value \(value) Failed for bit width \(bit) and radix \(radix). Expected \(expectedValue) but got \(result).")
-                        }
+            let customInt = try CustomInteger(for: bit)
+            for radix in radices {
+                if let testCases = expectedResults[bit]?[radix] {
+                    for (value, expectedValue) in testCases {
+                        let result = try customInt.radix(value: value, radix: radix)
+                        #expect(result == expectedValue, "Value \(value) Failed for bit width \(bit) and radix \(radix). Expected \(expectedValue) but got \(result).")
                     }
                 }
             }

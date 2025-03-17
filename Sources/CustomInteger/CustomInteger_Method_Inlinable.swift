@@ -48,6 +48,13 @@ extension CustomInteger {
         return !T.isSigned /* Unsigned integer always true */ || (lhs ^ rhs) >= 0
     }
     
+    /// - Returns: The number of trailing zero bits in the binary representation of a value.
+    @inlinable
+    @inline(__always)
+    public func trailingZeroBitCount<T: BinaryInteger>(_ value: T) -> Int {
+        return value == 0 ? bitWidth : value.trailingZeroBitCount
+    }
+    
     /// Converts a value to a signed integer of a specific bit width, handling sign extension and truncation.
     /// - Returns: A signed, truncated bit width value.
     @inlinable

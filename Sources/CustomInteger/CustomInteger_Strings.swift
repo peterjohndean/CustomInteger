@@ -89,7 +89,7 @@ extension CustomInteger {
         let minCharacters = Int(ceil(Double(self.bitWidth) / log2Radix))                    // (2) The minimum number of characters needed.
         let separatorGroup = (radix == 2 || radix == 16) ? 4 : 3                            // (3) The number of digits per group before inserting a separator.
         let separatorCount = (minCharacters - 1) / separatorGroup                           // (4) The number of separators needed.
-        let preallocSize = minCharacters + separatorCount + (isSigned(value.self) ? 1 : 0)  // (5) The final preallocation size.
+        let preallocSize = minCharacters + separatorCount + (isNegative(value.self) ? 1 : 0)  // (5) The final preallocation size.
         
         // Preallocate buffer
         var result = [Character]()

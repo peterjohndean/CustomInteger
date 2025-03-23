@@ -30,8 +30,8 @@ extension CustomInteger {
     /// - Returns: true, if the data type is signed and negative
     @inlinable
     @inline(__always)
-    public func isSigned<T: BinaryInteger>(_ value: T) -> Bool {
-        return T.isSigned /* Unsigned always false */ && (Int(value) & masks.signedBit) != 0
+    public func isNegative<T: BinaryInteger>(_ value: T) -> Bool {
+        return T.isSigned /* Unsigned integer always false */ && (Int(value) & masks.signedBit) != 0
     }
     
     /// - Returns: true, if both types are the same and both signs are opposite.

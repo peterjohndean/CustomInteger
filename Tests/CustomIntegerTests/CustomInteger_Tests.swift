@@ -27,9 +27,9 @@ struct CustomInteger_Tests {
     
     @Test func General_Tests() {
         if let a = try? CustomInteger(for: 8) {
-            #expect(a.isSigned(-1) == true)
-            #expect(a.isSigned(1) == false)
-            #expect(a.isSigned(UInt(1)) == false)
+            #expect(a.isNegative(-1) == true)
+            #expect(a.isNegative(1) == false)
+            #expect(a.isNegative(UInt(1)) == false)
             
             #expect(a.isInRange(-1) == true)
             #expect(a.isInRange(UInt8(1)) == true)
